@@ -191,7 +191,7 @@ CVTL >> executeContext: aContext [
 		c2 = $; asciiValue ifFalse: [ self putCrlf ].
 		^ self ].
 	value := self expressionContext: aContext.
-	c = $$ asciiValue ifTrue: [ ^ self putChar: (value bitAnd: 16rFF) ].
+	c = $$ asciiValue ifTrue: [ ^ self putAsciiValue: (value bitAnd: 16rFF) ].
 	c = $? asciiValue ifTrue: [ ^ self putNumber: value ].
 	memory wordAt: address put: value.
 	self updateRandom: value
@@ -405,17 +405,17 @@ CVTL >> programAddress [
 ]
 
 { #category : #'input/output' }
-CVTL >> putChar: anInteger [
+CVTL >> putAsciiValue: anInteger [
 
-	ui putChar: anInteger
+	ui putAsciiValue: anInteger
 ]
 
 { #category : #'input/output' }
 CVTL >> putCrlf [
 
 	self
-		putChar: Character cr asciiValue;
-		putChar: Character lf asciiValue
+		putAsciiValue: Character cr asciiValue;
+		putAsciiValue: Character lf asciiValue
 ]
 
 { #category : #private }
@@ -450,7 +450,7 @@ CVTL >> putNumber: anInteger [
 { #category : #'input/output' }
 CVTL >> putString: aString [
 
-	aString do: [ :each | self putChar: each asciiValue ].
+	aString do: [ :each | self putAsciiValue: each asciiValue ].
 	self putCrlf
 ]
 
@@ -461,7 +461,7 @@ CVTL >> putUntil: anInteger context: aContext [
 	[ 
 	c := memory byteAt: aContext pos.
 	c ~= anInteger ] whileTrue: [ 
-		self putChar: c.
+		self putAsciiValue: c.
 		aContext incrementPos ].
 	aContext incrementPos
 ]

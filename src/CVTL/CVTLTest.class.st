@@ -888,15 +888,15 @@ CVTLTest >> testProgramAddress [
 ]
 
 { #category : #tests }
-CVTLTest >> testPutChar [
+CVTLTest >> testPutAsciiValue [
 
 	| obj ui |
 	obj := self newObj.
 	ui := self newUI.
 	obj ui: ui.
 	self assert: ui output isEmpty.
-	obj putChar: 65.
-	obj putChar: 66.
+	obj putAsciiValue: 65.
+	obj putAsciiValue: 66.
 	self assertCollection: ui output asArray equals: #( 65 66 ).
 	self assert: ui outputString equals: 'AB'
 ]

@@ -62,7 +62,7 @@ CVTLDummyUI >> outputString [
 ]
 
 { #category : #'input/output' }
-CVTLDummyUI >> putChar: anInteger [
+CVTLDummyUI >> putAsciiValue: anInteger [
 
 	output add: anInteger
 ]
