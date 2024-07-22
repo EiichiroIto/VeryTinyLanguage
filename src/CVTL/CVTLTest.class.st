@@ -317,6 +317,16 @@ CVTLTest >> testBoundaryAddress [
 ]
 
 { #category : #tests }
+CVTLTest >> testBreak [
+
+	| obj |
+	obj := self newObj.
+	obj status beStepping.
+	obj break.
+	self assert: obj status isPrompted
+]
+
+{ #category : #tests }
 CVTLTest >> testCurrentLineNo [
 
 	| obj memory |
@@ -930,19 +940,6 @@ CVTLTest >> testPutNumber [
 	obj putNumber: 123.
 	self assertCollection: ui output asArray equals: #( 49 50 51 ).
 	self assert: ui outputString equals: '123'
-]
-
-{ #category : #tests }
-CVTLTest >> testPutString [
-
-	| obj ui |
-	obj := self newObj.
-	ui := self newUI.
-	obj ui: ui.
-	obj memory: (self newMemory: 300).
-	self assert: ui output isEmpty.
-	obj putString: 'ABC'.
-	self assertCollection: ui output asArray equals: #( 65 66 67 13 10 )
 ]
 
 { #category : #tests }

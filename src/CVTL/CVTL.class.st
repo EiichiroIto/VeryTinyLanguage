@@ -55,6 +55,12 @@ CVTL >> boundaryAddress [
 	^ 2 * (2 + $& asciiValue)
 ]
 
+{ #category : #action }
+CVTL >> break [
+
+	status bePrompted
+]
+
 { #category : #accessing }
 CVTL >> currentLineNo [
 
@@ -167,7 +173,9 @@ CVTL >> doOneCycle [
 		self doExecuteStep ifTrue: [ 
 			self
 				putCrlf;
-				putString: 'OK'.
+				putAsciiValue: $O asciiValue;
+				putAsciiValue: $K asciiValue;
+				putCrlf.
 			status bePrompted ].
 		^ self ].
 	self error
@@ -464,13 +472,6 @@ CVTL >> putNumber: anInteger [
 	pos := pos - 1.
 	memory byteAt: pos put: y + $0 asciiValue ] doWhileTrue: [ x ~= 0 ].
 	self putUntil: 0 context: (self newContext: pos)
-]
-
-{ #category : #'input/output' }
-CVTL >> putString: aString [
-
-	aString do: [ :each | self putAsciiValue: each asciiValue ].
-	self putCrlf
 ]
 
 { #category : #'input/output' }

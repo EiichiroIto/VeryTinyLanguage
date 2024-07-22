@@ -4,14 +4,12 @@ Class {
 	#instVars : [
 		'cvtl',
 		'menu',
-		'buttonBreak',
-		'buttonSave',
 		'labelStatus',
 		'ui',
 		'output',
-		'buttonLoad',
 		'process',
-		'inputQueue'
+		'inputQueue',
+		'toolBar'
 	],
 	#category : #'CVTL-UI'
 }
@@ -57,15 +55,25 @@ SpCVTL >> appVersion [
 { #category : #process }
 SpCVTL >> breakProcess [
 
-	
+	self stopProcess.
+	cvtl break.
+	self startProcess.
+	output morph
+		put: 'Break' , String cr;
+		changed
+]
+
+{ #category : #actions }
+SpCVTL >> clearScreen [
+
+	output morph
+		clearScreen;
+		changed
 ]
 
 { #category : #initialization }
 SpCVTL >> connectPresenters [
 
-	buttonBreak action: [ self breakProcess ].
-	buttonLoad action: [ self loadFile ].
-	buttonSave action: [ self saveFile ].
 	output morph whenKeyPressed: [ :c | self keyPressed: c ]
 ]
 
@@ -86,15 +94,9 @@ SpCVTL >> defaultLayout [
 
 	^ SpBoxLayout newVertical
 		  add: #menu expand: false;
-		  add: (SpBoxLayout newHorizontal
-				   add: #buttonLoad;
-				   add: #buttonSave;
-				   add: #buttonBreak;
-				   yourself)
-		  withConstraints: [ :c | c height: self class buttonHeight ];
+		  add: toolBar expand: false;
 		  add: #output;
 		  add: (SpBoxLayout newHorizontal
-				   "add: #timer width: 5;"
 				   add: #labelStatus;
 				   yourself)
 		  expand: false;
@@ -186,21 +188,34 @@ SpCVTL >> initialize [
 SpCVTL >> initializePresenters [
 
 	menu := self newMenuBar.
-	buttonLoad := self newButton
-		              help: 'Load program';
-		              label: 'Load';
-		              icon: (self iconNamed: #glamorousOpen);
-		              yourself.
-	buttonSave := self newButton
-		              help: 'Save program';
-		              label: 'Save';
-		              icon: (self iconNamed: #glamorousSave);
-		              yourself.
-	buttonBreak := self newButton
-		               help: 'Stop program';
-		               label: 'Stop';
-		               icon: (self iconNamed: #stop);
-		               yourself.
+	toolBar := self newToolbar
+		           addItem: (SpToolbarButtonPresenter new
+				            help: 'Load program';
+				            label: 'Load';
+				            icon: (self iconNamed: #glamorousOpen);
+				            action: [ self loadFile ];
+				            yourself);
+		           addItem: (SpToolbarButtonPresenter new
+				            help: 'Save program';
+				            label: 'Save';
+				            icon: (self iconNamed: #glamorousSave);
+				            action: [ self saveFile ];
+				            yourself);
+		           addItem: (SpToolbarButtonPresenter new
+				            help: 'Stop program';
+				            label: 'Stop';
+				            icon: (self iconNamed: #stop);
+				            action: [ self breakProcess ];
+				            yourself);
+		           addItem: (SpToolbarButtonPresenter new
+				            help: 'Clear screen';
+				            label: 'Clear';
+				            icon: (self iconNamed: #refresh);
+				            action: [ self clearScreen ];
+				            yourself);
+		           yourself.
+
+
 	output := self newMorph
 		          morph: self newConsoleMorph;
 		          yourself.
@@ -240,15 +255,25 @@ SpCVTL >> keyPressed: anInteger [
 
 	anInteger = 0 ifTrue: [ ^ self ].
 	inputQueue add: anInteger.
-	process ifNil: [ ^ self ].
-	process isSuspended ifFalse: [ ^ self ].
-	process resume
+	self resumeProcess
 ]
 
-{ #category : #'menu actions' }
+{ #category : #actions }
 SpCVTL >> loadFile [
 
-	self shouldBeImplemented
+	| file lines |
+	file := UIManager default
+		        chooseExistingFileReference: 'Load program'
+		        extensions: { 'vtl' }
+		        path: FileSystem workingDirectory.
+	file ifNil: [ ^ self ].
+	file isFile ifFalse: [ ^ self ].
+	lines := file contents lines.
+	cvtl boundary: cvtl programAddress.
+	lines do: [ :each | 
+		each do: [ :each2 | inputQueue add: each2 asciiValue ].
+		inputQueue add: Character cr asciiValue ].
+	self resumeProcess
 ]
 
 { #category : #constants }
@@ -307,7 +332,15 @@ SpCVTL >> putAsciiValue: anInteger [
 	output morph putAsciiValue: anInteger
 ]
 
-{ #category : #'menu actions' }
+{ #category : #process }
+SpCVTL >> resumeProcess [
+
+	process ifNil: [ ^ self ].
+	process isSuspended ifFalse: [ ^ self ].
+	process resume
+]
+
+{ #category : #actions }
 SpCVTL >> saveFile [
 
 	self shouldBeImplemented
