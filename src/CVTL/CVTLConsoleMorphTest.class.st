@@ -269,6 +269,17 @@ CVTLConsoleMorphTest >> testUpdateCharExtent [
 	self assert: m charExtent isPoint
 ]
 
+{ #category : #tests }
+CVTLConsoleMorphTest >> testWhenKeyPressed [
+
+	| morph block |
+	morph := self newMorph.
+	self assert: morph whenKeyPressed isNil.
+	block := [  ].
+	morph whenKeyPressed: block.
+	self assert: morph whenKeyPressed identicalTo: block
+]
+
 { #category : #test }
 CVTLConsoleMorphTest >> testWithinScreen [
 

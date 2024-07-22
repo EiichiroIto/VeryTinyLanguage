@@ -55,13 +55,11 @@ CVTLTest >> newUI [
 CVTLTest >> setupFor: aCVTL [
 
 	| memory |
-	memory := CVTLMemory new.
+	memory := self newMemory: self memorySize.
 	aCVTL memory: memory.
-	memory allocate: self memorySize.
 	aCVTL memoryLimit: self memorySize.
 	aCVTL boundary: aCVTL programAddress.
-	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed.
-	aCVTL status: CVTLStatus new
+	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed
 ]
 
 { #category : #private }
@@ -452,33 +450,20 @@ CVTLTest >> testDoExecuteStep [
 	status address: obj lineBufferAddress.
 	status beStepping.
 	obj status: status.
-	obj doExecuteStep.
-	self assert: obj status isStepping.
-	obj doExecuteStep.
-	self assert: obj status isStepping.
-	obj doExecuteStep.
-	self assert: obj status isStepping.
-	obj doExecuteStep.
-	self assert: obj status isPrompted.
+	r := obj doExecuteStep.
+	self deny: r.
+	r := obj doExecuteStep.
+	self deny: r.
+	r := obj doExecuteStep.
+	self deny: r.
+	r := obj doExecuteStep.
+	self assert: r.
 	r := obj memory wordAt: (obj addressForAsciiValue: $x asciiValue).
 	self assert: r equals: 5.
 	r := obj memory wordAt: (obj addressForAsciiValue: $y asciiValue).
 	self assert: r equals: 12.
 	r := obj memory wordAt: (obj addressForAsciiValue: $z asciiValue).
 	self assert: r equals: 17
-]
-
-{ #category : #tests }
-CVTLTest >> testDoExit [
-
-	| obj flag |
-	obj := self newObj.
-	flag := false.
-	obj doExit.
-	self deny: flag.
-	obj exitBlock: [ flag := true ].
-	obj doExit.
-	self assert: flag
 ]
 
 { #category : #tests }
@@ -538,6 +523,10 @@ CVTLTest >> testDoOneCycle1 [
 	self assert: obj ui outputString equals: '100 X=1
 110 Y=2
 120 Z=X+Y
+0
+100 X=1
+110 Y=2
+120 Z=X+Y
 '.
 	self assert: obj status isPrompted.
 	self assert: obj status pos isNil
@@ -592,17 +581,6 @@ CVTLTest >> testExecuteContext [
 	context pos: pos.
 	obj executeContext: context.
 	self assert: obj ui outputString equals: 'abc'
-]
-
-{ #category : #tests }
-CVTLTest >> testExitBlock [
-
-	| obj block |
-	obj := self newObj.
-	self assert: obj exitBlock isNil.
-	block := [  ].
-	obj exitBlock: block.
-	self assert: obj exitBlock identicalTo: block
 ]
 
 { #category : #tests }
@@ -862,6 +840,15 @@ CVTLTest >> testNewContext [
 ]
 
 { #category : #tests }
+CVTLTest >> testNewStatus [
+
+	| obj r |
+	obj := self newObj.
+	r := obj newStatus.
+	self assert: r isPrompted
+]
+
+{ #category : #tests }
 CVTLTest >> testNextLineOf [
 
 	| obj org r |
@@ -998,7 +985,7 @@ CVTLTest >> testStatus [
 	| obj status |
 	obj := self newObj.
 	status := self newStatus.
-	self assert: obj status isNil.
+	self assert: obj status isPrompted.
 	obj status: status.
 	self assert: obj status identicalTo: status
 ]

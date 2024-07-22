@@ -14,13 +14,16 @@ CVTLDummyUI >> addInput: aString [
 	input add: aString
 ]
 
-{ #category : #'input/output' }
-CVTLDummyUI >> getLine [
+{ #category : #accessing }
+CVTLDummyUI >> getAsciiValue [
 
 	| line |
 	input isEmpty ifTrue: [ ^ nil ].
-	line := input removeFirst.
-	^ line
+	line := input first.
+	input removeFirst.
+	line isEmpty ifTrue: [ ^ Character cr asciiValue ].
+	input addFirst: line copyWithoutFirst.
+	^ line first asciiValue
 ]
 
 { #category : #initialization }

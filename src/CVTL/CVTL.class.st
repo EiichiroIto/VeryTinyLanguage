@@ -3,7 +3,6 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'memory',
-		'exitBlock',
 		'ui',
 		'status'
 	],
@@ -114,25 +113,18 @@ CVTL >> doExecuteStep [
 	r2 := memory wordAt: status address.
 	(lineNo = 0 or: [ lineNo = r2 ])
 		ifTrue: [ 
-			status address = self lineBufferAddress ifTrue: [ 
-				^ status bePrompted ].
+			status address = self lineBufferAddress ifTrue: [ ^ true ].
 			status address: (self nextLineOf: status address).
-			status address >= self boundary ifTrue: [ ^ status bePrompted ] ]
+			status address >= self boundary ifTrue: [ ^ true ] ]
 		ifFalse: [ 
 			lineNo := memory wordAt: status address.
 			memory wordAt: self savedLineNoAddress put: lineNo + 1.
 			status address: self findLine.
-			status address ifNil: [ ^ status bePrompted ] ].
+			status address ifNil: [ ^ true ] ].
 	lineNo := memory wordAt: status address.
 	self currentLineNo: lineNo.
-	status pos: status address + 2 + 1
-]
-
-{ #category : #action }
-CVTL >> doExit [
-
-	exitBlock ifNil: [ ^ self ].
-	exitBlock value
+	status pos: status address + 2 + 1.
+	^ false
 ]
 
 { #category : #action }
@@ -171,7 +163,13 @@ CVTL >> doOneCycle [
 		status
 			beStepping;
 			address: pos ].
-	status isStepping ifTrue: [ ^ self doExecuteStep ].
+	status isStepping ifTrue: [ 
+		self doExecuteStep ifTrue: [ 
+			self
+				putCrlf;
+				putString: 'OK'.
+			status bePrompted ].
+		^ self ].
 	self error
 ]
 
@@ -195,18 +193,6 @@ CVTL >> executeContext: aContext [
 	c = $? asciiValue ifTrue: [ ^ self putNumber: value ].
 	memory wordAt: address put: value.
 	self updateRandom: value
-]
-
-{ #category : #accessing }
-CVTL >> exitBlock [
-
-	^ exitBlock
-]
-
-{ #category : #accessing }
-CVTL >> exitBlock: anObject [
-
-	exitBlock := anObject
 ]
 
 { #category : #private }
@@ -235,7 +221,7 @@ CVTL >> factorContext: aContext [
 		tmp := self lineBufferAddress.
 		self getLineInto: tmp.
 		^ self expressionContext: (self newContext: tmp) ].
-	c = $$ asciiValue ifTrue: [ self error ].
+	c = $$ asciiValue ifTrue: [ ^ self getAsciiValue ].
 	c = $( asciiValue ifTrue: [ ^ self expressionContext: aContext ].
 	aContext decrementPos.
 	tmp := self getVariableContext: aContext.
@@ -258,12 +244,33 @@ CVTL >> findLine [
 ]
 
 { #category : #'input/output' }
+CVTL >> getAsciiValue [
+
+	^ ui getAsciiValue
+]
+
+{ #category : #'input/output' }
 CVTL >> getLineInto: anInteger [
 
-	| ret |
-	ret := ui getLine.
-	ret ifNil: [ ^ self doExit ].
-	memory copyString: ret to: anInteger
+	| pos c |
+	pos := 0.
+	[ 
+	c := self getAsciiValue.
+	c ifNil: [ self error ].
+	c = Character backspace asciiValue ifTrue: [ 
+		pos > 0 ifTrue: [ 
+			pos := pos - 1.
+			self putAsciiValue: c ] ].
+	c = Character cr asciiValue ifTrue: [ 
+		memory byteAt: anInteger + pos put: 0.
+		^ self putCrlf ].
+	(c = 16r15 or: [ pos > 74 ]) ifTrue: [ 
+		self putCrlf.
+		pos := 0 ].
+	c >= Character space asciiValue ifTrue: [ 
+		memory byteAt: anInteger + pos put: c.
+		self putAsciiValue: c.
+		pos := pos + 1 ] ] repeat
 ]
 
 { #category : #private }
@@ -312,6 +319,12 @@ CVTL >> indexForAsciiValue: anInteger [
 	(anInteger between: $a asciiValue and: $z asciiValue) ifTrue: [ 
 		^ anInteger - 16r60 ].
 	^ self invalidCharacterIndex
+]
+
+{ #category : #initialization }
+CVTL >> initialize [
+
+	status := self newStatus
 ]
 
 { #category : #private }
@@ -378,6 +391,12 @@ CVTL >> memoryLimitAddress [
 CVTL >> newContext: anInteger [
 
 	^ CVTLContext pos: anInteger
+]
+
+{ #category : #'instance creation' }
+CVTL >> newStatus [
+
+	^ CVTLStatus new
 ]
 
 { #category : #private }

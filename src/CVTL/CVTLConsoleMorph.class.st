@@ -6,9 +6,10 @@ Class {
 		'charExtent',
 		'screen',
 		'screenSize',
-		'cursor'
+		'cursor',
+		'whenKeyPressed'
 	],
-	#category : #'CVTL-Tests'
+	#category : #'CVTL-UI'
 }
 
 { #category : #accessing }
@@ -156,6 +157,12 @@ CVTLConsoleMorph >> goto: aPoint [
 ]
 
 { #category : #'event handling' }
+CVTLConsoleMorph >> handlesKeyboard: evt [
+
+	^ true
+]
+
+{ #category : #'event handling' }
 CVTLConsoleMorph >> handlesMouseDown: evt [
 	^ true
 ]
@@ -172,8 +179,26 @@ CVTLConsoleMorph >> initialize [
 ]
 
 { #category : #'event handling' }
+CVTLConsoleMorph >> keyDown: event [
+
+	| c |
+	c := event keyCharacter asciiValue.
+	(#( 8 13 ) includes: c) ifFalse: [ ^ self ].
+	whenKeyPressed ifNotNil: [ 
+		whenKeyPressed value: event keyCharacter asciiValue ]
+]
+
+{ #category : #'event handling' }
+CVTLConsoleMorph >> keyStroke: event [
+
+	whenKeyPressed ifNotNil: [ 
+		whenKeyPressed value: event keyCharacter asciiValue ]
+]
+
+{ #category : #'event handling' }
 CVTLConsoleMorph >> mouseDown: evt [
-	
+
+	self activeHand newKeyboardFocus: self
 ]
 
 { #category : #private }
@@ -197,6 +222,20 @@ CVTLConsoleMorph >> put: aString [
 		(each = Character lf or: [ each = Character cr ])
 			ifTrue: [ self newLine ]
 			ifFalse: [ self putChar: each ] ]
+]
+
+{ #category : #api }
+CVTLConsoleMorph >> putAsciiValue: anInteger [
+
+	anInteger = Character lf asciiValue ifTrue: [ ^ self ].
+	anInteger = Character cr asciiValue ifTrue: [ 
+		self newLine.
+		^ self changed ].
+	anInteger = Character backspace asciiValue ifTrue: [ 
+		cursor x > 0 ifTrue: [ self goto: cursor x - 1 @ cursor y ].
+		^ self changed ].
+	self putChar: (Character value: anInteger).
+	self changed
 ]
 
 { #category : #private }
@@ -260,6 +299,18 @@ CVTLConsoleMorph >> updateCharExtent [
 CVTLConsoleMorph >> updateExtent [
 
 	super extent: screenSize * charExtent
+]
+
+{ #category : #accessing }
+CVTLConsoleMorph >> whenKeyPressed [
+
+	^ whenKeyPressed
+]
+
+{ #category : #accessing }
+CVTLConsoleMorph >> whenKeyPressed: anObject [
+
+	whenKeyPressed := anObject
 ]
 
 { #category : #testing }

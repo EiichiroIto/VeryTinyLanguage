@@ -72,5 +72,10 @@ CVTLSamplesTest >> testSample1 [
 	| samples ui |
 	samples := self newSamples.
 	ui := self execute: samples sample1.
-	self assert: ui outputString equals: '246'
+	self assert: ui outputString equals: '100 A=123
+200 ?=A*2
+#=1
+246
+OK
+'
 ]
