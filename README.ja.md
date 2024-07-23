@@ -1,6 +1,8 @@
 # VeryTinyLanguage
 Very Tiny Language for Pharo Smalltalk
 
+![Screenshot](https://raw.githubusercontent.com/EiichiroIto/VeryTinyLanguage/main/images/cvtl.png)
+
 これは Very Tiny Language (VTLと略）を Pharo Smalltalk に移植したものです。
 
 VTL はAltair 680 用に開発されたプログラミング言語で、BASIC に似た文法を持っています。
