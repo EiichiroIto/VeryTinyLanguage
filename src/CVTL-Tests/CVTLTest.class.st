@@ -48,7 +48,7 @@ CVTLTest >> newStatus [
 { #category : #'instance creation' }
 CVTLTest >> newUI [
 
-	^ CVTLDummyUI new
+	^ CVTLNonInteractiveUI new
 ]
 
 { #category : #private }
@@ -321,9 +321,13 @@ CVTLTest >> testBreak [
 
 	| obj |
 	obj := self newObj.
+	obj ui: self newUI.
 	obj status beStepping.
 	obj break.
-	self assert: obj status isPrompted
+	self assert: obj status isPrompted.
+	self assert: obj ui outputString equals: '
+BREAK
+'
 ]
 
 { #category : #tests }
@@ -392,91 +396,6 @@ CVTLTest >> testDeleteLineNo [
 ]
 
 { #category : #tests }
-CVTLTest >> testDoEntryLineNoFrom [
-
-	| obj memory org pos |
-	obj := self newObj.
-	memory := self newMemory: 300.
-	obj memory: memory.
-	obj memoryLimit: 300.
-	org := obj programAddress.
-	obj boundary: org.
-	pos := obj lineBufferAddress + 2.
-	memory copyString: 'Y=23' to: pos.
-	obj doEntryLineNo: 110 from: pos.
-	self assert: (memory wordAt: org) equals: 110.
-	self assert: (memory byteAt: org + 2) equals: $Y asciiValue.
-	self assert: (memory byteAt: org + 3) equals: $= asciiValue.
-	self assert: (memory byteAt: org + 4) equals: $2 asciiValue.
-	self assert: (memory byteAt: org + 5) equals: $3 asciiValue.
-	self assert: (memory byteAt: org + 6) equals: 0.
-	self assert: obj boundary equals: org + 7.
-	memory copyString: 'X=1' to: pos.
-	obj doEntryLineNo: 100 from: pos.
-	self assert: (memory wordAt: org) equals: 100.
-	self assert: (memory byteAt: org + 2) equals: $X asciiValue.
-	self assert: (memory byteAt: org + 3) equals: $= asciiValue.
-	self assert: (memory byteAt: org + 4) equals: $1 asciiValue.
-	self assert: (memory byteAt: org + 5) equals: 0.
-	self assert: (memory wordAt: org + 6) equals: 110.
-	self assert: (memory byteAt: org + 8) equals: $Y asciiValue.
-	self assert: (memory byteAt: org + 9) equals: $= asciiValue.
-	self assert: (memory byteAt: org + 10) equals: $2 asciiValue.
-	self assert: (memory byteAt: org + 11) equals: $3 asciiValue.
-	self assert: (memory byteAt: org + 12) equals: 0.
-	self assert: obj boundary equals: org + 13.
-	memory copyString: 'Z=X+Y' to: pos.
-	obj doEntryLineNo: 120 from: pos.
-	self assert: (memory wordAt: org) equals: 100.
-	self assert: (memory byteAt: org + 2) equals: $X asciiValue.
-	self assert: (memory byteAt: org + 3) equals: $= asciiValue.
-	self assert: (memory byteAt: org + 4) equals: $1 asciiValue.
-	self assert: (memory byteAt: org + 5) equals: 0.
-	self assert: (memory wordAt: org + 6) equals: 110.
-	self assert: (memory byteAt: org + 8) equals: $Y asciiValue.
-	self assert: (memory byteAt: org + 9) equals: $= asciiValue.
-	self assert: (memory byteAt: org + 10) equals: $2 asciiValue.
-	self assert: (memory byteAt: org + 11) equals: $3 asciiValue.
-	self assert: (memory byteAt: org + 12) equals: 0.
-	self assert: (memory wordAt: org + 13) equals: 120.
-	self assert: (memory byteAt: org + 15) equals: $Z asciiValue.
-	self assert: (memory byteAt: org + 16) equals: $= asciiValue.
-	self assert: (memory byteAt: org + 17) equals: $X asciiValue.
-	self assert: (memory byteAt: org + 18) equals: $+ asciiValue.
-	self assert: (memory byteAt: org + 19) equals: $Y asciiValue.
-	self assert: (memory byteAt: org + 20) equals: 0.
-	self assert: obj boundary equals: org + 21
-]
-
-{ #category : #tests }
-CVTLTest >> testDoExecuteStep [
-
-	| obj pos status r |
-	obj := self setupProgram1.
-	pos := obj lineBufferAddress + 2.
-	obj memory copyString: '#=1' to: pos.
-	status := self newStatus.
-	status pos: pos.
-	status address: obj lineBufferAddress.
-	status beStepping.
-	obj status: status.
-	r := obj doExecuteStep.
-	self deny: r.
-	r := obj doExecuteStep.
-	self deny: r.
-	r := obj doExecuteStep.
-	self deny: r.
-	r := obj doExecuteStep.
-	self assert: r.
-	r := obj memory wordAt: (obj addressForAsciiValue: $x asciiValue).
-	self assert: r equals: 5.
-	r := obj memory wordAt: (obj addressForAsciiValue: $y asciiValue).
-	self assert: r equals: 12.
-	r := obj memory wordAt: (obj addressForAsciiValue: $z asciiValue).
-	self assert: r equals: 17
-]
-
-{ #category : #tests }
 CVTLTest >> testDoList [
 
 	| obj |
@@ -502,7 +421,7 @@ CVTLTest >> testDoOneCycle1 [
 	| obj ui p |
 	obj := CVTL new.
 	self setupFor: obj.
-	ui := CVTLDummyUI new.
+	ui := CVTLNonInteractiveUI new.
 	ui addInput: '100 X=1'.
 	ui addInput: '110 Y=2'.
 	ui addInput: '120 Z=X+Y'.
@@ -548,7 +467,7 @@ CVTLTest >> testDoOneCycle2 [
 	| obj ui |
 	obj := CVTL new.
 	self setupFor: obj.
-	ui := CVTLDummyUI new.
+	ui := CVTLNonInteractiveUI new.
 	ui addInput: '100 X=123'.
 	ui addInput: '#=1'.
 	obj ui: ui.
@@ -572,6 +491,81 @@ CVTLTest >> testDoOneCycle2 [
 ]
 
 { #category : #tests }
+CVTLTest >> testEntryIntoLineNo [
+
+	| obj memory |
+	obj := self newObj.
+	memory := self newMemory: 16.
+	obj memory: memory.
+	memory copyString: 'ABC' to: 3.
+	memory byteAt: 15 put: 99.
+	self
+		assertCollection: memory core
+		equals: #[ 0 0 0 65 66 67 0 0 0 0 0 0 0 0 0 99 ].
+	obj entry: 3 into: 10 lineNo: 1000.
+	self
+		assertCollection: memory core
+		equals: #[ 0 0 0 65 66 67 0 0 0 0 16rE8 3 65 66 67 0 ]
+]
+
+{ #category : #tests }
+CVTLTest >> testEntryLineNo [
+
+	| obj memory org pos |
+	obj := self newObj.
+	memory := self newMemory: 300.
+	obj memory: memory.
+	obj memoryLimit: 300.
+	org := obj programAddress.
+	obj boundary: org.
+	pos := obj lineBufferAddress + 2.
+	memory copyString: 'Y=23' to: pos.
+	obj entry: pos lineNo: 110.
+	self assert: (memory wordAt: org) equals: 110.
+	self assert: (memory byteAt: org + 2) equals: $Y asciiValue.
+	self assert: (memory byteAt: org + 3) equals: $= asciiValue.
+	self assert: (memory byteAt: org + 4) equals: $2 asciiValue.
+	self assert: (memory byteAt: org + 5) equals: $3 asciiValue.
+	self assert: (memory byteAt: org + 6) equals: 0.
+	self assert: obj boundary equals: org + 7.
+	memory copyString: 'X=1' to: pos.
+	obj entry: pos lineNo: 100.
+	self assert: (memory wordAt: org) equals: 100.
+	self assert: (memory byteAt: org + 2) equals: $X asciiValue.
+	self assert: (memory byteAt: org + 3) equals: $= asciiValue.
+	self assert: (memory byteAt: org + 4) equals: $1 asciiValue.
+	self assert: (memory byteAt: org + 5) equals: 0.
+	self assert: (memory wordAt: org + 6) equals: 110.
+	self assert: (memory byteAt: org + 8) equals: $Y asciiValue.
+	self assert: (memory byteAt: org + 9) equals: $= asciiValue.
+	self assert: (memory byteAt: org + 10) equals: $2 asciiValue.
+	self assert: (memory byteAt: org + 11) equals: $3 asciiValue.
+	self assert: (memory byteAt: org + 12) equals: 0.
+	self assert: obj boundary equals: org + 13.
+	memory copyString: 'Z=X+Y' to: pos.
+	obj entry: pos lineNo: 120.
+	self assert: (memory wordAt: org) equals: 100.
+	self assert: (memory byteAt: org + 2) equals: $X asciiValue.
+	self assert: (memory byteAt: org + 3) equals: $= asciiValue.
+	self assert: (memory byteAt: org + 4) equals: $1 asciiValue.
+	self assert: (memory byteAt: org + 5) equals: 0.
+	self assert: (memory wordAt: org + 6) equals: 110.
+	self assert: (memory byteAt: org + 8) equals: $Y asciiValue.
+	self assert: (memory byteAt: org + 9) equals: $= asciiValue.
+	self assert: (memory byteAt: org + 10) equals: $2 asciiValue.
+	self assert: (memory byteAt: org + 11) equals: $3 asciiValue.
+	self assert: (memory byteAt: org + 12) equals: 0.
+	self assert: (memory wordAt: org + 13) equals: 120.
+	self assert: (memory byteAt: org + 15) equals: $Z asciiValue.
+	self assert: (memory byteAt: org + 16) equals: $= asciiValue.
+	self assert: (memory byteAt: org + 17) equals: $X asciiValue.
+	self assert: (memory byteAt: org + 18) equals: $+ asciiValue.
+	self assert: (memory byteAt: org + 19) equals: $Y asciiValue.
+	self assert: (memory byteAt: org + 20) equals: 0.
+	self assert: obj boundary equals: org + 21
+]
+
+{ #category : #tests }
 CVTLTest >> testExecuteContext [
 
 	| obj pos ui context |
@@ -579,18 +573,46 @@ CVTLTest >> testExecuteContext [
 	self setupFor: obj.
 	pos := obj programAddress.
 	obj memory copyString: '  "abc"' to: pos.
-	ui := CVTLDummyUI new.
+	ui := CVTLNonInteractiveUI new.
 	obj ui: ui.
 	context := self newContext: pos.
 	obj executeContext: context.
 	self assert: obj ui outputString equals: 'abc
 '.
 	obj memory copyString: '  "abc";' to: pos.
-	ui := CVTLDummyUI new.
+	ui := CVTLNonInteractiveUI new.
 	obj ui: ui.
 	context pos: pos.
 	obj executeContext: context.
 	self assert: obj ui outputString equals: 'abc'
+]
+
+{ #category : #tests }
+CVTLTest >> testExecuteOnce [
+
+	| obj pos status r |
+	obj := self setupProgram1.
+	pos := obj lineBufferAddress + 2.
+	obj memory copyString: '#=1' to: pos.
+	status := self newStatus.
+	status pos: pos.
+	status address: obj lineBufferAddress.
+	status beStepping.
+	obj status: status.
+	r := obj executeOnce.
+	self deny: r.
+	r := obj executeOnce.
+	self deny: r.
+	r := obj executeOnce.
+	self deny: r.
+	r := obj executeOnce.
+	self assert: r.
+	r := obj memory wordAt: (obj addressForAsciiValue: $x asciiValue).
+	self assert: r equals: 5.
+	r := obj memory wordAt: (obj addressForAsciiValue: $y asciiValue).
+	self assert: r equals: 12.
+	r := obj memory wordAt: (obj addressForAsciiValue: $z asciiValue).
+	self assert: r equals: 17
 ]
 
 { #category : #tests }
@@ -604,6 +626,12 @@ CVTLTest >> testExpressionContext [
 	context := self newContext: pos.
 	r := obj expressionContext: context.
 	self assert: r equals: 3.
+	self assert: context pos equals: pos + 4.
+	pos := obj programAddress.
+	obj memory copyString: '1-2' to: pos.
+	context := self newContext: pos.
+	r := obj expressionContext: context.
+	self assert: r equals: 65535.
 	self assert: context pos equals: pos + 4
 ]
 
@@ -663,6 +691,26 @@ CVTLTest >> testFindLine [
 	self assert: (obj memory byteAt: r) > 0.
 	obj currentLineNo: 121.
 	r := obj findLine.
+	self assert: r isNil
+]
+
+{ #category : #tests }
+CVTLTest >> testGetAsciiValue [
+
+	| obj ui r |
+	obj := self newObj.
+	ui := self newUI.
+	obj ui: ui.
+	ui addInput: 'ABC'.
+	r := obj getAsciiValue.
+	self assert: r equals: $A asciiValue.
+	r := obj getAsciiValue.
+	self assert: r equals: $B asciiValue.
+	r := obj getAsciiValue.
+	self assert: r equals: $C asciiValue.
+	r := obj getAsciiValue.
+	self assert: r equals: Character cr asciiValue.
+	r := obj getAsciiValue.
 	self assert: r isNil
 ]
 
@@ -908,24 +956,6 @@ CVTLTest >> testPutCrlf [
 	self assert: ui output isEmpty.
 	obj putCrlf.
 	self assertCollection: ui output asArray equals: #( 13 10 )
-]
-
-{ #category : #tests }
-CVTLTest >> testPutLineNoFromTo [
-
-	| obj memory |
-	obj := self newObj.
-	memory := self newMemory: 16.
-	obj memory: memory.
-	memory copyString: 'ABC' to: 3.
-	memory byteAt: 15 put: 99.
-	self
-		assertCollection: memory core
-		equals: #[ 0 0 0 65 66 67 0 0 0 0 0 0 0 0 0 99 ].
-	obj putLineNo: 1000 from: 3 to: 10.
-	self
-		assertCollection: memory core
-		equals: #[ 0 0 0 65 66 67 0 0 0 0 16rE8 3 65 66 67 0 ]
 ]
 
 { #category : #tests }

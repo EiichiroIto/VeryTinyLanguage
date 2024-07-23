@@ -13,7 +13,7 @@ CVTLConsoleMorphTest >> newMorph [
 	^ CVTLConsoleMorph new
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testCharExtent [
 
 	| m |
@@ -23,7 +23,7 @@ CVTLConsoleMorphTest >> testCharExtent [
 	self assert: m charExtent equals: 5 @ 6
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testCharacterAt [
 
 	| m |
@@ -44,7 +44,7 @@ CVTLConsoleMorphTest >> testCharacterAt [
 	self assert: (m characterAt: 0 @ 3) equals: Character space
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testCharacterAtPut [
 
 	| m |
@@ -61,7 +61,7 @@ CVTLConsoleMorphTest >> testCharacterAtPut [
 	self assert: m screen third equals: '  ecd'
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testClearScreen [
 
 	| m |
@@ -79,7 +79,7 @@ CVTLConsoleMorphTest >> testClearScreen [
 	self assert: m screen third isEmpty
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testCurrentLine [
 
 	| m |
@@ -97,7 +97,7 @@ CVTLConsoleMorphTest >> testCurrentLine [
 	self assert: m currentLine equals: 'aaaa'
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testCursor [
 
 	| m |
@@ -107,19 +107,13 @@ CVTLConsoleMorphTest >> testCursor [
 	self assert: m cursor equals: 5 @ 6
 ]
 
-{ #category : #test }
-CVTLConsoleMorphTest >> testDefaultFont [
-
-	self newMorph defaultFont isFontSet
-]
-
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testDefaultScreenSize [
 
 	self assert: self newMorph defaultScreenSize isPoint
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testFont [
 
 	| m f |
@@ -130,7 +124,7 @@ CVTLConsoleMorphTest >> testFont [
 	self assert: m font identicalTo: f
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testGoto [
 
 	| m |
@@ -143,7 +137,7 @@ CVTLConsoleMorphTest >> testGoto [
 	self assert: m cursor equals: 0 @ 0
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testNewLine [
 
 	| m |
@@ -165,7 +159,7 @@ CVTLConsoleMorphTest >> testNewLine [
 	self assert: m screen third equals: ''
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testPut [
 
 	| m |
@@ -183,7 +177,7 @@ fg'.
 	self assert: m screen third equals: ''
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testPutChar [
 
 	| m |
@@ -207,7 +201,7 @@ CVTLConsoleMorphTest >> testPutChar [
 	self assert: m screen third equals: 'C'
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testScreen [
 
 	| m a |
@@ -218,7 +212,7 @@ CVTLConsoleMorphTest >> testScreen [
 	self assert: m screen identicalTo: a
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testScreenSize [
 
 	| m |
@@ -228,7 +222,7 @@ CVTLConsoleMorphTest >> testScreenSize [
 	self assert: m screenSize equals: 10 @ 20
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testScroll [
 
 	| m |
@@ -252,13 +246,13 @@ CVTLConsoleMorphTest >> testScroll [
 	
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testTextColor [
 
 	self newMorph textColor isColor
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testUpdateCharExtent [
 
 	| m |
@@ -280,7 +274,7 @@ CVTLConsoleMorphTest >> testWhenKeyPressed [
 	self assert: morph whenKeyPressed identicalTo: block
 ]
 
-{ #category : #test }
+{ #category : #tests }
 CVTLConsoleMorphTest >> testWithinScreen [
 
 	| m |

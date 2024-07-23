@@ -24,13 +24,15 @@ CVTLStatus >> address: anObject [
 { #category : #accessing }
 CVTLStatus >> bePrompted [
 
-	state := #prompted
+	state := #prompted.
+	^ self
 ]
 
 { #category : #accessing }
 CVTLStatus >> beStepping [
 
-	state := #stepping
+	state := #stepping.
+	^ self
 ]
 
 { #category : #initialization }

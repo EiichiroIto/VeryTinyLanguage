@@ -50,3 +50,17 @@ CVTLContextTest >> testPos [
 	obj pos: 456.
 	self assert: obj pos equals: 456
 ]
+
+{ #category : #tests }
+CVTLContextTest >> testPrintOn [
+
+	| obj stream |
+	obj := self newObj.
+	stream := WriteStream on: String new.
+	obj printOn: stream.
+	self assert: stream contents equals: 'Context[nil]'.
+	obj pos: 123.
+	stream := WriteStream on: String new.
+	obj printOn: stream.
+	self assert: stream contents equals: 'Context[123]'
+]

@@ -22,12 +22,12 @@ CVTL class >> initialize [
 { #category : #private }
 CVTL class >> variableTable [
 
-	| obj dict |
+	| obj arr |
 	obj := self new.
-	dict := Array new: 128.
-	0 to: 127 do: [ :each | 
-	dict at: each + 1 put: (obj indexForAsciiValue: each) ].
-	^ dict
+	arr := Array new: 256.
+	0 to: 255 do: [ :each | 
+	arr at: each + 1 put: (obj indexForAsciiValue: each) ].
+	^ arr
 ]
 
 { #category : #accessing }
@@ -58,6 +58,14 @@ CVTL >> boundaryAddress [
 { #category : #action }
 CVTL >> break [
 
+	self
+		putCrlf;
+		putAsciiValue: $B asciiValue;
+		putAsciiValue: $R asciiValue;
+		putAsciiValue: $E asciiValue;
+		putAsciiValue: $A asciiValue;
+		putAsciiValue: $K asciiValue;
+		putCrlf.
 	status bePrompted
 ]
 
@@ -99,41 +107,6 @@ CVTL >> deleteLineNo: anInteger [
 ]
 
 { #category : #action }
-CVTL >> doEntryLineNo: anInteger from: anInteger2 [
-
-	| cur count |
-	cur := self deleteLineNo: anInteger.
-	cur ifNil: [ cur := self boundary ].
-	(memory byteAt: anInteger2) = 0 ifTrue: [ ^ self ].
-	count := 3 + (memory countFrom: anInteger2 until: 0).
-	(self insert: count at: cur) ifFalse: [ ^ self ].
-	self putLineNo: anInteger from: anInteger2 to: cur
-]
-
-{ #category : #action }
-CVTL >> doExecuteStep [
-
-	| lineNo r2 |
-	self executeContext: (self newContext: status pos).
-	lineNo := self currentLineNo.
-	r2 := memory wordAt: status address.
-	(lineNo = 0 or: [ lineNo = r2 ])
-		ifTrue: [ 
-			status address = self lineBufferAddress ifTrue: [ ^ true ].
-			status address: (self nextLineOf: status address).
-			status address >= self boundary ifTrue: [ ^ true ] ]
-		ifFalse: [ 
-			lineNo := memory wordAt: status address.
-			memory wordAt: self savedLineNoAddress put: lineNo + 1.
-			status address: self findLine.
-			status address ifNil: [ ^ true ] ].
-	lineNo := memory wordAt: status address.
-	self currentLineNo: lineNo.
-	status pos: status address + 2 + 1.
-	^ false
-]
-
-{ #category : #action }
 CVTL >> doList [
 
 	| context num boundary |
@@ -161,7 +134,7 @@ CVTL >> doOneCycle [
 		lineNo ifNotNil: [ 
 			^ lineNo = 0
 				  ifTrue: [ self doList ]
-				  ifFalse: [ self doEntryLineNo: lineNo from: context pos ] ].
+				  ifFalse: [ self entry: context pos lineNo: lineNo ] ].
 		status pos: pos.
 		pos := self lineBufferAddress.
 		memory wordAt: pos put: 0.
@@ -170,7 +143,7 @@ CVTL >> doOneCycle [
 			beStepping;
 			address: pos ].
 	status isStepping ifTrue: [ 
-		self doExecuteStep ifTrue: [ 
+		self executeOnce ifTrue: [ 
 			self
 				putCrlf;
 				putAsciiValue: $O asciiValue;
@@ -179,6 +152,32 @@ CVTL >> doOneCycle [
 			status bePrompted ].
 		^ self ].
 	self error
+]
+
+{ #category : #private }
+CVTL >> entry: anInteger into: anInteger2 lineNo: anInteger3 [
+
+	| src dst tmp |
+	memory wordAt: anInteger2 put: anInteger3.
+	src := anInteger.
+	dst := anInteger2 + 2.
+	[ 
+	tmp := memory copyByteFrom: src to: dst.
+	src := src + 1.
+	dst := dst + 1.
+	tmp ~= 0 ] whileTrue
+]
+
+{ #category : #private }
+CVTL >> entry: anInteger lineNo: anInteger2 [
+
+	| cur count |
+	cur := self deleteLineNo: anInteger2.
+	cur ifNil: [ cur := self boundary ].
+	(memory byteAt: anInteger) = 0 ifTrue: [ ^ self ].
+	count := 3 + (memory countFrom: anInteger until: 0).
+	(self insert: count at: cur) ifFalse: [ ^ self ].
+	self entry: anInteger into: cur lineNo: anInteger2
 ]
 
 { #category : #private }
@@ -204,13 +203,38 @@ CVTL >> executeContext: aContext [
 ]
 
 { #category : #private }
+CVTL >> executeOnce [
+
+	| lineNo r2 |
+	self executeContext: (self newContext: status pos).
+	lineNo := self currentLineNo.
+	r2 := memory wordAt: status address.
+	(lineNo = 0 or: [ lineNo = r2 ])
+		ifTrue: [ 
+			status address = self lineBufferAddress ifTrue: [ ^ true ].
+			status address: (self nextLineOf: status address).
+			status address >= self boundary ifTrue: [ ^ true ] ]
+		ifFalse: [ 
+			lineNo := memory wordAt: status address.
+			memory wordAt: self savedLineNoAddress put: lineNo + 1.
+			status address: self findLine.
+			status address ifNil: [ ^ true ] ].
+	lineNo := memory wordAt: status address.
+	self currentLineNo: lineNo.
+	status pos: status address + 2 + 1.
+	^ false
+]
+
+{ #category : #private }
 CVTL >> expressionContext: aContext [
 
 	| value c |
 	value := self factorContext: aContext.
 	[ 
 	(c := memory byteAt: aContext pos) ~= 0 and: [ c ~= $) asciiValue ] ] 
-		whileTrue: [ value := self term: value context: aContext ].
+		whileTrue: [ 
+			value := self term: value context: aContext.
+			value := value bitAnd: 16rFFFF ].
 	aContext incrementPos.
 	^ value
 ]
@@ -443,20 +467,6 @@ CVTL >> putCrlf [
 	self
 		putAsciiValue: Character cr asciiValue;
 		putAsciiValue: Character lf asciiValue
-]
-
-{ #category : #private }
-CVTL >> putLineNo: anInteger from: anInteger2 to: anInteger3 [
-
-	| src dst tmp |
-	memory wordAt: anInteger3 put: anInteger.
-	src := anInteger2.
-	dst := anInteger3 + 2.
-	[ 
-	tmp := memory copyByteFrom: src to: dst.
-	src := src + 1.
-	dst := dst + 1.
-	tmp ~= 0 ] whileTrue
 ]
 
 { #category : #'input/output' }

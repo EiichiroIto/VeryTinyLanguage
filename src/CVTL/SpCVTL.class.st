@@ -4,8 +4,6 @@ Class {
 	#instVars : [
 		'cvtl',
 		'menu',
-		'labelStatus',
-		'ui',
 		'output',
 		'process',
 		'inputQueue',
@@ -57,10 +55,7 @@ SpCVTL >> breakProcess [
 
 	self stopProcess.
 	cvtl break.
-	self startProcess.
-	output morph
-		put: 'Break' , String cr;
-		changed
+	self startProcess
 ]
 
 { #category : #actions }
@@ -68,7 +63,8 @@ SpCVTL >> clearScreen [
 
 	output morph
 		clearScreen;
-		changed
+		changed;
+		takeKeyboardFocus
 ]
 
 { #category : #initialization }
@@ -96,10 +92,6 @@ SpCVTL >> defaultLayout [
 		  add: #menu expand: false;
 		  add: toolBar expand: false;
 		  add: #output;
-		  add: (SpBoxLayout newHorizontal
-				   add: #labelStatus;
-				   yourself)
-		  expand: false;
 		  yourself
 ]
 
@@ -109,12 +101,28 @@ SpCVTL >> defaultRandomSeed [
 	^ 12345
 ]
 
+{ #category : #private }
+SpCVTL >> enterString: aString [
+
+	aString lines do: [ :each | 
+		inputQueue
+			addAll: (each asArray collect: #asciiValue);
+			add: Character cr asciiValue ].
+	self resumeProcess
+]
+
 { #category : #process }
 SpCVTL >> executionLoop [
 
 	[ 
 	cvtl doOneCycle.
 	(Delay forMilliseconds: 100) wait ] repeat
+]
+
+{ #category : #constants }
+SpCVTL >> extension [
+
+	^ 'vtl'
 ]
 
 { #category : #initialization }
@@ -169,12 +177,6 @@ SpCVTL >> helpMenu [
 		  yourself
 ]
 
-{ #category : #constants }
-SpCVTL >> initialExtent [
-
-	^ 660 @ 500
-]
-
 { #category : #initialization }
 SpCVTL >> initialize [
 
@@ -202,6 +204,12 @@ SpCVTL >> initializePresenters [
 				            action: [ self saveFile ];
 				            yourself);
 		           addItem: (SpToolbarButtonPresenter new
+				            help: 'Input program';
+				            label: 'Input';
+				            icon: (self iconNamed: #glamorousEdit);
+				            action: [ self inputProgram ];
+				            yourself);
+		           addItem: (SpToolbarButtonPresenter new
 				            help: 'Stop program';
 				            label: 'Stop';
 				            icon: (self iconNamed: #stop);
@@ -214,14 +222,9 @@ SpCVTL >> initializePresenters [
 				            action: [ self clearScreen ];
 				            yourself);
 		           yourself.
-
-
 	output := self newMorph
 		          morph: self newConsoleMorph;
 		          yourself.
-	labelStatus := self newLabel
-		               label: 'Status';
-		               yourself.
 	self setupMenu
 ]
 
@@ -233,9 +236,25 @@ SpCVTL >> initializeWindow: aWindow [
 		whenOpenedDo: [ 
 			output takeKeyboardFocus.
 			self startProcess ];
-		initialExtent: self initialExtent;
+		initialExtent: 660 @ 500;
 		title: self appName;
 		aboutText: self appText
+]
+
+{ #category : #actions }
+SpCVTL >> inputProgram [
+
+	| ret |
+	ret := SpRequestTextDialog new
+		       title: 'Input Program';
+		       label: 'Enter code';
+		       text: '';
+		       acceptLabel: 'OK';
+		       cancelLabel: 'Cancel';
+		       openModal.
+	ret ifNil: [ ^ self ].
+	self enterString: ret.
+	output takeKeyboardFocus
 ]
 
 { #category : #accessing }
@@ -261,19 +280,16 @@ SpCVTL >> keyPressed: anInteger [
 { #category : #actions }
 SpCVTL >> loadFile [
 
-	| file lines |
+	| file |
 	file := UIManager default
 		        chooseExistingFileReference: 'Load program'
-		        extensions: { 'vtl' }
+		        extensions: { self extension }
 		        path: FileSystem workingDirectory.
 	file ifNil: [ ^ self ].
 	file isFile ifFalse: [ ^ self ].
-	lines := file contents lines.
 	cvtl boundary: cvtl programAddress.
-	lines do: [ :each | 
-		each do: [ :each2 | inputQueue add: each2 asciiValue ].
-		inputQueue add: Character cr asciiValue ].
-	self resumeProcess
+	self enterString: file contents.
+	output takeKeyboardFocus
 ]
 
 { #category : #constants }
@@ -343,7 +359,21 @@ SpCVTL >> resumeProcess [
 { #category : #actions }
 SpCVTL >> saveFile [
 
-	self shouldBeImplemented
+	| file dummyUI |
+	file := UIManager default
+		        chooseForSaveFileReference: 'Save program'
+		        extensions: { self extension }
+		        path: FileSystem workingDirectory.
+	file ifNil: [ ^ self ].
+	file := file withExtension: self extension.
+	dummyUI := CVTLNonInteractiveUI new.
+	cvtl ui in: [ :oldUI | 
+		[ 
+		cvtl ui: dummyUI.
+		cvtl doList ] ensure: [ cvtl ui: oldUI ] ].
+	file writeStreamDo: [ :stream | 
+		stream nextPutAll: dummyUI outputString ].
+	output takeKeyboardFocus
 ]
 
 { #category : #initialization }

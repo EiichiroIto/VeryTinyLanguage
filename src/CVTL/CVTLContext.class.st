@@ -18,13 +18,13 @@ CVTLContext class >> pos: anInteger [
 { #category : #accessing }
 CVTLContext >> decrementPos [
 
-	pos := pos - 1
+	^ pos := pos - 1
 ]
 
 { #category : #accessing }
 CVTLContext >> incrementPos [
 
-	pos := pos + 1
+	^ pos := pos + 1
 ]
 
 { #category : #accessing }
@@ -37,4 +37,13 @@ CVTLContext >> pos [
 CVTLContext >> pos: anObject [
 
 	pos := anObject
+]
+
+{ #category : #printing }
+CVTLContext >> printOn: aStream [
+
+	aStream
+		nextPutAll: 'Context[';
+		nextPutAll: pos asString;
+		nextPut: $]
 ]

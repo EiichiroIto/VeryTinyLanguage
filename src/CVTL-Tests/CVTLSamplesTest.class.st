@@ -50,7 +50,7 @@ CVTLSamplesTest >> newSamples [
 { #category : #'instance creation' }
 CVTLSamplesTest >> newUI [
 
-	^ CVTLDummyUI new
+	^ CVTLNonInteractiveUI new
 ]
 
 { #category : #private }
