@@ -277,6 +277,21 @@ SpCVTL >> keyPressed: anInteger [
 	self resumeProcess
 ]
 
+{ #category : #initialization }
+SpCVTL >> languageMenu [
+
+	| m classes |
+	m := self newMenu.
+	m addGroup: [ :grp | 
+		classes := CVTL withAllSubclasses sort: [ :a :b | a name < b name ].
+		classes do: [ :each | 
+			grp addItem: [ :item | 
+				item
+					name: each name;
+					action: [ self selectLanguage: each ] ] ] ].
+	^ m
+]
+
 { #category : #actions }
 SpCVTL >> loadFile [
 
@@ -376,6 +391,15 @@ SpCVTL >> saveFile [
 	output takeKeyboardFocus
 ]
 
+{ #category : #private }
+SpCVTL >> selectLanguage: aClass [
+
+	self stopProcess.
+	cvtl := aClass new.
+	self setupFor: cvtl.
+	self startProcess
+]
+
 { #category : #initialization }
 SpCVTL >> setupFor: aCVTL [
 
@@ -384,8 +408,7 @@ SpCVTL >> setupFor: aCVTL [
 	aCVTL memory: memory.
 	aCVTL memoryLimit: self memorySize.
 	aCVTL boundary: aCVTL programAddress.
-	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed.
-	aCVTL ui: self
+	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed
 ]
 
 { #category : #initialization }
@@ -398,6 +421,10 @@ SpCVTL >> setupMenu [
 				subMenu: self fileMenu ];
 		addItem: [ :item | 
 			item
+				name: 'Language';
+				subMenu: self languageMenu ];
+		addItem: [ :item | 
+			item
 				name: 'Help';
 				subMenu: self helpMenu ]
 ]
@@ -406,6 +433,7 @@ SpCVTL >> setupMenu [
 SpCVTL >> startProcess [
 
 	self stopProcess.
+	cvtl ui: self.
 	process := [ 
 	           self executionLoop.
 	           process := nil ] fork
