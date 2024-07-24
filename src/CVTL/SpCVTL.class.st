@@ -2,12 +2,12 @@ Class {
 	#name : #SpCVTL,
 	#superclass : #SpPresenter,
 	#instVars : [
-		'cvtl',
 		'menu',
 		'output',
 		'process',
 		'inputQueue',
-		'toolBar'
+		'toolBar',
+		'language'
 	],
 	#category : #'CVTL-UI'
 }
@@ -54,7 +54,7 @@ SpCVTL >> appVersion [
 SpCVTL >> breakProcess [
 
 	self stopProcess.
-	cvtl break.
+	language break.
 	self startProcess
 ]
 
@@ -71,18 +71,6 @@ SpCVTL >> clearScreen [
 SpCVTL >> connectPresenters [
 
 	output morph whenKeyPressed: [ :c | self keyPressed: c ]
-]
-
-{ #category : #accessing }
-SpCVTL >> cvtl [
-
-	^ cvtl
-]
-
-{ #category : #accessing }
-SpCVTL >> cvtl: anObject [
-
-	cvtl := anObject
 ]
 
 { #category : #layout }
@@ -115,7 +103,7 @@ SpCVTL >> enterString: aString [
 SpCVTL >> executionLoop [
 
 	[ 
-	cvtl doOneCycle.
+	language doOneCycle.
 	(Delay forMilliseconds: 100) wait ] repeat
 ]
 
@@ -180,8 +168,7 @@ SpCVTL >> helpMenu [
 { #category : #initialization }
 SpCVTL >> initialize [
 
-	cvtl := self newCVTL.
-	self setupFor: cvtl.
+	self selectLanguage: CVTL.
 	inputQueue := OrderedCollection new.
 	super initialize
 ]
@@ -288,7 +275,10 @@ SpCVTL >> languageMenu [
 			grp addItem: [ :item | 
 				item
 					name: each name;
-					action: [ self selectLanguage: each ] ] ] ].
+					action: [ 
+						self stopProcess.
+						self selectLanguage: each.
+						self startProcess ] ] ] ].
 	^ m
 ]
 
@@ -302,7 +292,7 @@ SpCVTL >> loadFile [
 		        path: FileSystem workingDirectory.
 	file ifNil: [ ^ self ].
 	file isFile ifFalse: [ ^ self ].
-	cvtl boundary: cvtl programAddress.
+	language boundary: language programAddress.
 	self enterString: file contents.
 	output takeKeyboardFocus
 ]
@@ -311,12 +301,6 @@ SpCVTL >> loadFile [
 SpCVTL >> memorySize [
 
 	^ 1024 * 32
-]
-
-{ #category : #'instance creation' }
-SpCVTL >> newCVTL [
-
-	^ CVTL new
 ]
 
 { #category : #'instance creation' }
@@ -382,10 +366,10 @@ SpCVTL >> saveFile [
 	file ifNil: [ ^ self ].
 	file := file withExtension: self extension.
 	dummyUI := CVTLNonInteractiveUI new.
-	cvtl ui in: [ :oldUI | 
+	language ui in: [ :oldUI | 
 		[ 
-		cvtl ui: dummyUI.
-		cvtl doList ] ensure: [ cvtl ui: oldUI ] ].
+		language ui: dummyUI.
+		language doList ] ensure: [ language ui: oldUI ] ].
 	file writeStreamDo: [ :stream | 
 		stream nextPutAll: dummyUI outputString ].
 	output takeKeyboardFocus
@@ -394,10 +378,8 @@ SpCVTL >> saveFile [
 { #category : #private }
 SpCVTL >> selectLanguage: aClass [
 
-	self stopProcess.
-	cvtl := aClass new.
-	self setupFor: cvtl.
-	self startProcess
+	language := aClass new.
+	self setupFor: language
 ]
 
 { #category : #initialization }
@@ -433,7 +415,7 @@ SpCVTL >> setupMenu [
 SpCVTL >> startProcess [
 
 	self stopProcess.
-	cvtl ui: self.
+	language ui: self.
 	process := [ 
 	           self executionLoop.
 	           process := nil ] fork

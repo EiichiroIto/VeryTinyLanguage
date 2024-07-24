@@ -188,15 +188,16 @@ CVTL >> executeContext: aContext [
 	c := tmp first.
 	address := tmp second.
 	aContext incrementPos.
-	c2 := memory byteAt: aContext pos.
+	c2 := aContext byteIn: memory.
 	c2 = $" asciiValue ifTrue: [ 
 		aContext incrementPos.
 		self putUntil: $" asciiValue context: aContext.
-		c2 := memory byteAt: aContext pos.
+		c2 := aContext byteIn: memory.
 		c2 = $; asciiValue ifFalse: [ self putCrlf ].
 		^ self ].
 	value := self expressionContext: aContext.
-	c = $$ asciiValue ifTrue: [ ^ self putAsciiValue: (value bitAnd: 16rFF) ].
+	c = $$ asciiValue ifTrue: [ 
+		^ self putAsciiValue: (value bitAnd: 16rFF) ].
 	c = $? asciiValue ifTrue: [ ^ self putNumber: value ].
 	memory wordAt: address put: value.
 	self updateRandom: value
@@ -230,8 +231,7 @@ CVTL >> expressionContext: aContext [
 
 	| value c |
 	value := self factorContext: aContext.
-	[ 
-	(c := memory byteAt: aContext pos) ~= 0 and: [ c ~= $) asciiValue ] ] 
+	[ (c := aContext byteIn: memory) ~= 0 and: [ c ~= $) asciiValue ] ] 
 		whileTrue: [ 
 			value := self term: value context: aContext.
 			value := value bitAnd: 16rFFFF ].
@@ -243,11 +243,11 @@ CVTL >> expressionContext: aContext [
 CVTL >> factorContext: aContext [
 
 	| c tmp |
-	c := memory byteAt: aContext pos.
+	c := aContext byteIn: memory.
 	c = 0 ifTrue: [ ^ 0 ].
 	tmp := self getNumberContext: aContext.
 	tmp ifNotNil: [ ^ tmp ].
-	c := memory byteAt: aContext pos.
+	c := aContext byteIn: memory.
 	aContext incrementPos.
 	c = $? asciiValue ifTrue: [ 
 		tmp := self lineBufferAddress.
@@ -326,10 +326,10 @@ CVTL >> getNumberContext: aContext [
 CVTL >> getVariableContext: aContext [
 
 	| c value address |
-	c := memory byteAt: aContext pos.
+	c := aContext byteIn: memory.
 	aContext incrementPos.
 	c = $: asciiValue
-		ifTrue: [
+		ifTrue: [ 
 			value := self expressionContext: aContext.
 			address := self boundary + (value * 2) ]
 		ifFalse: [ address := self addressForAsciiValue: c ].
@@ -489,7 +489,7 @@ CVTL >> putUntil: anInteger context: aContext [
 
 	| c |
 	[ 
-	c := memory byteAt: aContext pos.
+	c := aContext byteIn: memory.
 	c ~= anInteger ] whileTrue: [ 
 		self putAsciiValue: c.
 		aContext incrementPos ].
@@ -530,7 +530,7 @@ CVTL >> status: anObject [
 CVTL >> term: anInteger context: aContext [
 
 	| c value |
-	c := memory byteAt: aContext pos.
+	c := aContext byteIn: memory.
 	aContext incrementPos.
 	value := self factorContext: aContext.
 	c = $* asciiValue ifTrue: [ ^ anInteger * value ].

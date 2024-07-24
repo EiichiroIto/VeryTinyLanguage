@@ -16,6 +16,12 @@ CVTLContext class >> pos: anInteger [
 ]
 
 { #category : #accessing }
+CVTLContext >> byteIn: aMemory [
+
+	^ aMemory byteAt: pos
+]
+
+{ #category : #accessing }
 CVTLContext >> decrementPos [
 
 	^ pos := pos - 1
