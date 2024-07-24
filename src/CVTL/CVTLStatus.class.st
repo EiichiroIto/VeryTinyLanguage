@@ -3,23 +3,11 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'state',
-		'pos',
-		'address'
+		'topOfLine',
+		'position'
 	],
 	#category : #'CVTL-Core'
 }
-
-{ #category : #accessing }
-CVTLStatus >> address [
-
-	^ address
-]
-
-{ #category : #accessing }
-CVTLStatus >> address: anObject [
-
-	address := anObject
-]
 
 { #category : #accessing }
 CVTLStatus >> bePrompted [
@@ -54,15 +42,15 @@ CVTLStatus >> isStepping [
 ]
 
 { #category : #accessing }
-CVTLStatus >> pos [
+CVTLStatus >> position [
 
-	^ pos
+	^ position
 ]
 
 { #category : #accessing }
-CVTLStatus >> pos: anInteger [
+CVTLStatus >> position: anInteger [
 
-	pos := anInteger
+	position := anInteger
 ]
 
 { #category : #printing }
@@ -71,10 +59,10 @@ CVTLStatus >> printOn: aStream [
 	aStream
 		nextPutAll: 'Status[state=';
 		nextPutAll: state asString;
-		nextPutAll: ',pos=';
-		nextPutAll: pos asString;
-		nextPutAll: ',address=';
-		nextPutAll: address asString;
+		nextPutAll: ',position=';
+		nextPutAll: position asString;
+		nextPutAll: ',topOfLine=';
+		nextPutAll: topOfLine asString;
 		nextPut: $]
 ]
 
@@ -88,4 +76,16 @@ CVTLStatus >> state [
 CVTLStatus >> state: anObject [
 
 	state := anObject
+]
+
+{ #category : #accessing }
+CVTLStatus >> topOfLine [
+
+	^ topOfLine
+]
+
+{ #category : #accessing }
+CVTLStatus >> topOfLine: anObject [
+
+	topOfLine := anObject
 ]

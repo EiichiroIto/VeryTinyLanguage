@@ -429,21 +429,21 @@ CVTLTest >> testDoOneCycle1 [
 	obj ui: ui.
 	obj doOneCycle.
 	self assert: obj status isPrompted.
-	self assert: obj status pos isNil.
+	self assert: obj status position isNil.
 	obj currentLineNo: 100.
 	p := obj findLine.
 	self assert: (obj memory wordAt: p) equals: 100.
 	self assert: (obj memory stringFrom: p + 2 until: 0) equals: ' X=1'.
 	obj doOneCycle.
 	self assert: obj status isPrompted.
-	self assert: obj status pos isNil.
+	self assert: obj status position isNil.
 	obj currentLineNo: 110.
 	p := obj findLine.
 	self assert: (obj memory wordAt: p) equals: 110.
 	self assert: (obj memory stringFrom: p + 2 until: 0) equals: ' Y=2'.
 	obj doOneCycle.
 	self assert: obj status isPrompted.
-	self assert: obj status pos isNil.
+	self assert: obj status position isNil.
 	obj currentLineNo: 120.
 	p := obj findLine.
 	self assert: (obj memory wordAt: p) equals: 120.
@@ -458,7 +458,7 @@ CVTLTest >> testDoOneCycle1 [
 120 Z=X+Y
 '.
 	self assert: obj status isPrompted.
-	self assert: obj status pos isNil
+	self assert: obj status position isNil
 ]
 
 { #category : #tests }
@@ -477,13 +477,13 @@ CVTLTest >> testDoOneCycle2 [
 		equals: 0.
 	obj doOneCycle.
 	self assert: obj status isPrompted.
-	self assert: obj status pos isNil.
+	self assert: obj status position isNil.
 	obj doOneCycle.
 	self assert: obj status isStepping.
-	self assert: obj status pos notNil.
+	self assert: obj status position notNil.
 	obj doOneCycle.
 	self assert: obj status isPrompted.
-	self assert: obj status pos notNil.
+	self assert: obj status position notNil.
 	self
 		assert:
 		(obj memory wordAt: (obj addressForAsciiValue: $x asciiValue))
@@ -582,7 +582,7 @@ CVTLTest >> testExecuteContext [
 	obj memory copyString: '  "abc";' to: pos.
 	ui := CVTLNonInteractiveUI new.
 	obj ui: ui.
-	context pos: pos.
+	context position: pos.
 	obj executeContext: context.
 	self assert: obj ui outputString equals: 'abc'
 ]
@@ -595,8 +595,8 @@ CVTLTest >> testExecuteOnce [
 	pos := obj lineBufferAddress + 2.
 	obj memory copyString: '#=1' to: pos.
 	status := self newStatus.
-	status pos: pos.
-	status address: obj lineBufferAddress.
+	status position: pos.
+	status topOfLine: obj lineBufferAddress.
 	status beStepping.
 	obj status: status.
 	r := obj executeOnce.
@@ -626,13 +626,13 @@ CVTLTest >> testExpressionContext [
 	context := self newContext: pos.
 	r := obj expressionContext: context.
 	self assert: r equals: 3.
-	self assert: context pos equals: pos + 4.
+	self assert: context position equals: pos + 4.
 	pos := obj programAddress.
 	obj memory copyString: '1-2' to: pos.
 	context := self newContext: pos.
 	r := obj expressionContext: context.
 	self assert: r equals: 65535.
-	self assert: context pos equals: pos + 4
+	self assert: context position equals: pos + 4
 ]
 
 { #category : #tests }
@@ -646,11 +646,11 @@ CVTLTest >> testFactorContext [
 	context := self newContext: pos.
 	r := obj factorContext: context.
 	self assert: r equals: 0.
-	self assert: context pos equals: pos.
+	self assert: context position equals: pos.
 	obj memory copyString: '123' to: pos.
 	r := obj factorContext: context.
 	self assert: r equals: 123.
-	self assert: context pos equals: pos + 3.
+	self assert: context position equals: pos + 3.
 	obj memory copyString: 'B' to: pos.
 	obj memory wordAt: (obj addressForAsciiValue: $a asciiValue) put: 10.
 	obj memory wordAt: (obj addressForAsciiValue: $b asciiValue) put: 20.
@@ -658,7 +658,7 @@ CVTLTest >> testFactorContext [
 	context := self newContext: pos.
 	r := obj factorContext: context.
 	self assert: r equals: 20.
-	self assert: context pos equals: pos + 1
+	self assert: context position equals: pos + 1
 ]
 
 { #category : #tests }
@@ -750,15 +750,15 @@ CVTLTest >> testGetNumberContext [
 		m byteAt: 5 put: 50 ].
 	context := self newContext: 0.
 	num := obj getNumberContext: context.
-	self assert: context pos equals: 0.
+	self assert: context position equals: 0.
 	self assert: num isNil.
-	context pos: 3.
+	context position: 3.
 	num := obj getNumberContext: context.
-	self assert: context pos equals: 6.
+	self assert: context position equals: 6.
 	self assert: num equals: 102.
-	context pos: 4.
+	context position: 4.
 	num := obj getNumberContext: context.
-	self assert: context pos equals: 6.
+	self assert: context position equals: 6.
 	self assert: num equals: 2
 ]
 
@@ -773,13 +773,13 @@ CVTLTest >> testGetVariableContext [
 	context := self newContext: pos.
 	memory byteAt: pos put: $a asciiValue.
 	arr := obj getVariableContext: context.
-	self assert: context pos equals: pos + 1.
+	self assert: context position equals: pos + 1.
 	self assert: arr first equals: $a asciiValue.
 	self assert: arr second equals: 6.
-	context pos: pos.
+	context position: pos.
 	memory byteAt: pos put: $# asciiValue.
 	arr := obj getVariableContext: context.
-	self assert: context pos equals: pos + 1.
+	self assert: context position equals: pos + 1.
 	self assert: arr first equals: $# asciiValue.
 	self assert: arr second equals: obj currentLineNoAddress
 ]
@@ -894,7 +894,7 @@ CVTLTest >> testNewContext [
 	obj := self newObj.
 	r := obj newContext: 123.
 	self assert: r class equals: CVTLContext.
-	self assert: r pos equals: 123
+	self assert: r position equals: 123
 ]
 
 { #category : #tests }
@@ -984,7 +984,7 @@ CVTLTest >> testPutUntilContext [
 	obj memory copyString: 'ABCDE' to: 290.
 	context := self newContext: 290.
 	obj putUntil: $D asciiValue context: context.
-	self assert: context pos equals: 294.
+	self assert: context position equals: 294.
 	self assertCollection: ui output asArray equals: #( 65 66 67 )
 ]
 
@@ -1028,55 +1028,55 @@ CVTLTest >> testTermContext [
 	context := self newContext: pos.
 	r := obj term: 5 context: context.
 	self assert: r equals: 7.
-	self assert: context pos equals: pos + 2.
+	self assert: context position equals: pos + 2.
 	obj memory copyString: '-2' to: pos.
-	context pos: pos.
+	context position: pos.
 	r := obj term: 6 context: context.
 	self assert: r equals: 4.
-	self assert: context pos equals: pos + 2.
+	self assert: context position equals: pos + 2.
 	obj memory copyString: '*21' to: pos.
-	context pos: pos.
+	context position: pos.
 	r := obj term: 5 context: context.
 	self assert: r equals: 105.
-	self assert: context pos equals: pos + 3.
+	self assert: context position equals: pos + 3.
 	self assert: (obj memory wordAt: obj remainderAddress) equals: 0.
 	obj memory copyString: '/3' to: pos.
-	context pos: pos.
+	context position: pos.
 	r := obj term: 7 context: context.
 	self assert: r equals: 2.
-	self assert: context pos equals: pos + 2.
+	self assert: context position equals: pos + 2.
 	self assert: (obj memory wordAt: obj remainderAddress) equals: 1.
 	obj memory copyString: '=99' to: pos.
-	context pos: pos.
+	context position: pos.
 	r := obj term: 99 context: context.
 	self assert: r equals: 1.
-	self assert: context pos equals: pos + 3.
-	context pos: pos.
+	self assert: context position equals: pos + 3.
+	context position: pos.
 	r := obj term: 98 context: context.
 	self assert: r equals: 0.
-	self assert: context pos equals: pos + 3.
+	self assert: context position equals: pos + 3.
 	obj memory copyString: '>99' to: pos.
-	context pos: pos.
+	context position: pos.
 	r := obj term: 98 context: context.
 	self assert: r equals: 0.
-	self assert: context pos equals: pos + 3.
-	context pos: pos.
+	self assert: context position equals: pos + 3.
+	context position: pos.
 	r := obj term: 99 context: context.
 	self assert: r equals: 1.
-	self assert: context pos equals: pos + 3.
-	context pos: pos.
+	self assert: context position equals: pos + 3.
+	context position: pos.
 	r := obj term: 100 context: context.
 	self assert: r equals: 1.
-	self assert: context pos equals: pos + 3.
+	self assert: context position equals: pos + 3.
 	obj memory copyString: '<100' to: pos.
-	context pos: pos.
+	context position: pos.
 	r := obj term: 99 context: context.
 	self assert: r equals: 1.
-	self assert: context pos equals: pos + 4.
-	context pos: pos.
+	self assert: context position equals: pos + 4.
+	context position: pos.
 	r := obj term: 100 context: context.
 	self assert: r equals: 0.
-	self assert: context pos equals: pos + 4
+	self assert: context position equals: pos + 4
 ]
 
 { #category : #tests }

@@ -14,41 +14,41 @@ CVTLContextTest >> newObj [
 ]
 
 { #category : #tests }
-CVTLContextTest >> testDecrementPos [
+CVTLContextTest >> testDecrement [
 
 	| obj |
 	obj := self newObj.
-	obj pos: 123.
-	self assert: obj pos equals: 123.
-	obj decrementPos.
-	self assert: obj pos equals: 122.
-	obj decrementPos.
-	self assert: obj pos equals: 121
+	obj position: 123.
+	self assert: obj position equals: 123.
+	obj decrement.
+	self assert: obj position equals: 122.
+	obj decrement.
+	self assert: obj position equals: 121
 ]
 
 { #category : #tests }
-CVTLContextTest >> testIncrementPos [
+CVTLContextTest >> testIncrement [
 
 	| obj |
 	obj := self newObj.
-	obj pos: 123.
-	self assert: obj pos equals: 123.
-	obj incrementPos.
-	self assert: obj pos equals: 124.
-	obj incrementPos.
-	self assert: obj pos equals: 125
+	obj position: 123.
+	self assert: obj position equals: 123.
+	obj increment.
+	self assert: obj position equals: 124.
+	obj increment.
+	self assert: obj position equals: 125
 ]
 
 { #category : #tests }
-CVTLContextTest >> testPos [
+CVTLContextTest >> testPosition [
 
 	| obj |
 	obj := self newObj.
-	self assert: obj pos isNil.
-	obj pos: 123.
-	self assert: obj pos equals: 123.
-	obj pos: 456.
-	self assert: obj pos equals: 456
+	self assert: obj position isNil.
+	obj position: 123.
+	self assert: obj position equals: 123.
+	obj position: 456.
+	self assert: obj position equals: 456
 ]
 
 { #category : #tests }
@@ -59,7 +59,7 @@ CVTLContextTest >> testPrintOn [
 	stream := WriteStream on: String new.
 	obj printOn: stream.
 	self assert: stream contents equals: 'Context[nil]'.
-	obj pos: 123.
+	obj position: 123.
 	stream := WriteStream on: String new.
 	obj printOn: stream.
 	self assert: stream contents equals: 'Context[123]'

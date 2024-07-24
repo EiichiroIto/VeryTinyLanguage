@@ -112,12 +112,12 @@ CVTL >> doList [
 	| context num boundary |
 	context := self newContext: self programAddress.
 	boundary := self boundary.
-	[ context pos < boundary ] whileTrue: [ 
-		num := memory wordAt: context pos.
+	[ context position < boundary ] whileTrue: [ 
+		num := memory wordAt: context position.
 		self putNumber: num.
 		context
-			incrementPos;
-			incrementPos.
+			increment;
+			increment.
 		self putUntil: 0 context: context.
 		self putCrlf ]
 ]
@@ -134,14 +134,14 @@ CVTL >> doOneCycle [
 		lineNo ifNotNil: [ 
 			^ lineNo = 0
 				  ifTrue: [ self doList ]
-				  ifFalse: [ self entry: context pos lineNo: lineNo ] ].
-		status pos: pos.
+				  ifFalse: [ self entry: context position lineNo: lineNo ] ].
+		status position: pos.
 		pos := self lineBufferAddress.
 		memory wordAt: pos put: 0.
 		self currentLineNo: 0.
 		status
 			beStepping;
-			address: pos ].
+			topOfLine: pos ].
 	status isStepping ifTrue: [ 
 		self executeOnce ifTrue: [ 
 			self
@@ -187,10 +187,10 @@ CVTL >> executeContext: aContext [
 	tmp := self getVariableContext: aContext.
 	c := tmp first.
 	address := tmp second.
-	aContext incrementPos.
+	aContext increment.
 	c2 := aContext byteIn: memory.
 	c2 = $" asciiValue ifTrue: [ 
-		aContext incrementPos.
+		aContext increment.
 		self putUntil: $" asciiValue context: aContext.
 		c2 := aContext byteIn: memory.
 		c2 = $; asciiValue ifFalse: [ self putCrlf ].
@@ -207,22 +207,22 @@ CVTL >> executeContext: aContext [
 CVTL >> executeOnce [
 
 	| lineNo r2 |
-	self executeContext: (self newContext: status pos).
+	self executeContext: (self newContext: status position).
 	lineNo := self currentLineNo.
-	r2 := memory wordAt: status address.
+	r2 := memory wordAt: status topOfLine.
 	(lineNo = 0 or: [ lineNo = r2 ])
 		ifTrue: [ 
-			status address = self lineBufferAddress ifTrue: [ ^ true ].
-			status address: (self nextLineOf: status address).
-			status address >= self boundary ifTrue: [ ^ true ] ]
+			status topOfLine = self lineBufferAddress ifTrue: [ ^ true ].
+			status topOfLine: (self nextLineOf: status topOfLine).
+			status topOfLine >= self boundary ifTrue: [ ^ true ] ]
 		ifFalse: [ 
-			lineNo := memory wordAt: status address.
+			lineNo := memory wordAt: status topOfLine.
 			memory wordAt: self savedLineNoAddress put: lineNo + 1.
-			status address: self findLine.
-			status address ifNil: [ ^ true ] ].
-	lineNo := memory wordAt: status address.
+			status topOfLine: self findLine.
+			status topOfLine ifNil: [ ^ true ] ].
+	lineNo := memory wordAt: status topOfLine.
 	self currentLineNo: lineNo.
-	status pos: status address + 2 + 1.
+	status position: status topOfLine + 2 + 1.
 	^ false
 ]
 
@@ -235,7 +235,7 @@ CVTL >> expressionContext: aContext [
 		whileTrue: [ 
 			value := self term: value context: aContext.
 			value := value bitAnd: 16rFFFF ].
-	aContext incrementPos.
+	aContext increment.
 	^ value
 ]
 
@@ -248,14 +248,14 @@ CVTL >> factorContext: aContext [
 	tmp := self getNumberContext: aContext.
 	tmp ifNotNil: [ ^ tmp ].
 	c := aContext byteIn: memory.
-	aContext incrementPos.
+	aContext increment.
 	c = $? asciiValue ifTrue: [ 
 		tmp := self lineBufferAddress.
 		self getLineInto: tmp.
 		^ self expressionContext: (self newContext: tmp) ].
 	c = $$ asciiValue ifTrue: [ ^ self getAsciiValue ].
 	c = $( asciiValue ifTrue: [ ^ self expressionContext: aContext ].
-	aContext decrementPos.
+	aContext decrement.
 	tmp := self getVariableContext: aContext.
 	^ memory wordAt: tmp second
 ]
@@ -309,7 +309,7 @@ CVTL >> getLineInto: anInteger [
 CVTL >> getNumberContext: aContext [
 
 	| c num pos |
-	pos := aContext pos.
+	pos := aContext position.
 	c := memory byteAt: pos.
 	(Character value: c) isDigit ifFalse: [ ^ nil ].
 	num := 0.
@@ -318,7 +318,7 @@ CVTL >> getNumberContext: aContext [
 		num := num + (c - $0 asciiValue).
 		pos := pos + 1.
 		c := memory byteAt: pos ].
-	aContext pos: pos.
+	aContext position: pos.
 	^ num
 ]
 
@@ -327,7 +327,7 @@ CVTL >> getVariableContext: aContext [
 
 	| c value address |
 	c := aContext byteIn: memory.
-	aContext incrementPos.
+	aContext increment.
 	c = $: asciiValue
 		ifTrue: [ 
 			value := self expressionContext: aContext.
@@ -492,8 +492,8 @@ CVTL >> putUntil: anInteger context: aContext [
 	c := aContext byteIn: memory.
 	c ~= anInteger ] whileTrue: [ 
 		self putAsciiValue: c.
-		aContext incrementPos ].
-	aContext incrementPos
+		aContext increment ].
+	aContext increment
 ]
 
 { #category : #constants }
@@ -531,7 +531,7 @@ CVTL >> term: anInteger context: aContext [
 
 	| c value |
 	c := aContext byteIn: memory.
-	aContext incrementPos.
+	aContext increment.
 	value := self factorContext: aContext.
 	c = $* asciiValue ifTrue: [ ^ anInteger * value ].
 	c = $+ asciiValue ifTrue: [ ^ anInteger + value ].

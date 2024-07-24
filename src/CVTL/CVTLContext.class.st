@@ -2,7 +2,7 @@ Class {
 	#name : #CVTLContext,
 	#superclass : #Object,
 	#instVars : [
-		'pos'
+		'position'
 	],
 	#category : #'CVTL-Core'
 }
@@ -11,38 +11,38 @@ Class {
 CVTLContext class >> pos: anInteger [
 
 	^ self new
-		  pos: anInteger;
+		  position: anInteger;
 		  yourself
 ]
 
 { #category : #accessing }
 CVTLContext >> byteIn: aMemory [
 
-	^ aMemory byteAt: pos
+	^ aMemory byteAt: position
 ]
 
 { #category : #accessing }
-CVTLContext >> decrementPos [
+CVTLContext >> decrement [
 
-	^ pos := pos - 1
+	^ position := position - 1
 ]
 
 { #category : #accessing }
-CVTLContext >> incrementPos [
+CVTLContext >> increment [
 
-	^ pos := pos + 1
+	^ position := position + 1
 ]
 
 { #category : #accessing }
-CVTLContext >> pos [
+CVTLContext >> position [
 
-	^ pos
+	^ position
 ]
 
 { #category : #accessing }
-CVTLContext >> pos: anObject [
+CVTLContext >> position: anObject [
 
-	pos := anObject
+	position := anObject
 ]
 
 { #category : #printing }
@@ -50,6 +50,6 @@ CVTLContext >> printOn: aStream [
 
 	aStream
 		nextPutAll: 'Context[';
-		nextPutAll: pos asString;
+		nextPutAll: position asString;
 		nextPut: $]
 ]

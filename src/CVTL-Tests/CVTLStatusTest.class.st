@@ -14,18 +14,6 @@ CVTLStatusTest >> newObj [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testAddress [
-
-	| obj |
-	obj := self newObj.
-	self assert: obj address isNil.
-	obj address: 123.
-	self assert: obj address equals: 123.
-	obj address: 456.
-	self assert: obj address equals: 456
-]
-
-{ #category : #tests }
 CVTLStatusTest >> testBePrompted [
 
 	| obj |
@@ -54,8 +42,8 @@ CVTLStatusTest >> testInitialize [
 	| obj |
 	obj := self newObj.
 	self assert: obj isPrompted.
-	self assert: obj pos isNil.
-	self assert: obj address isNil
+	self assert: obj position isNil.
+	self assert: obj topOfLine isNil
 ]
 
 { #category : #tests }
@@ -81,15 +69,15 @@ CVTLStatusTest >> testIsStepping [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testPos [
+CVTLStatusTest >> testPosition [
 
 	| obj |
 	obj := self newObj.
-	self assert: obj pos isNil.
-	obj pos: 123.
-	self assert: obj pos equals: 123.
-	obj pos: 456.
-	self assert: obj pos equals: 456
+	self assert: obj position isNil.
+	obj position: 123.
+	self assert: obj position equals: 123.
+	obj position: 456.
+	self assert: obj position equals: 456
 ]
 
 { #category : #tests }
@@ -101,15 +89,15 @@ CVTLStatusTest >> testPrintOn [
 	obj printOn: stream.
 	self
 		assert: stream contents
-		equals: 'Status[state=prompted,pos=nil,address=nil]'.
+		equals: 'Status[state=prompted,position=nil,topOfLine=nil]'.
 	obj beStepping.
-	obj pos: 123.
-	obj address: 456.
+	obj position: 123.
+	obj topOfLine: 456.
 	stream := WriteStream on: String new.
 	obj printOn: stream.
 	self
 		assert: stream contents
-		equals: 'Status[state=stepping,pos=123,address=456]'
+		equals: 'Status[state=stepping,position=123,topOfLine=456]'
 ]
 
 { #category : #tests }
@@ -122,4 +110,16 @@ CVTLStatusTest >> testState [
 	self assert: obj state equals: #abc.
 	obj state: #def.
 	self assert: obj state equals: #def
+]
+
+{ #category : #tests }
+CVTLStatusTest >> testTopOfLine [
+
+	| obj |
+	obj := self newObj.
+	self assert: obj topOfLine isNil.
+	obj topOfLine: 123.
+	self assert: obj topOfLine equals: 123.
+	obj topOfLine: 456.
+	self assert: obj topOfLine equals: 456
 ]
