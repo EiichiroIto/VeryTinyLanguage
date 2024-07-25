@@ -1,5 +1,5 @@
 Class {
-	#name : #CVTLConsoleMorph,
+	#name : #VTLConsoleMorph,
 	#superclass : #Morph,
 	#instVars : [
 		'font',
@@ -9,23 +9,23 @@ Class {
 		'cursor',
 		'whenKeyPressed'
 	],
-	#category : #'CVTL-UI'
+	#category : #'VTL-UI'
 }
 
 { #category : #accessing }
-CVTLConsoleMorph >> charExtent [
+VTLConsoleMorph >> charExtent [
 
 	^ charExtent
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> charExtent: anObject [
+VTLConsoleMorph >> charExtent: anObject [
 
 	charExtent := anObject
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> characterAt: aPoint [
+VTLConsoleMorph >> characterAt: aPoint [
 
 	| line |
 	(self withinScreen: aPoint) ifFalse: [ ^ Character space ].
@@ -35,7 +35,7 @@ CVTLConsoleMorph >> characterAt: aPoint [
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> characterAt: aPoint put: aCharacter [
+VTLConsoleMorph >> characterAt: aPoint put: aCharacter [
 
 	| line |
 	(self withinScreen: aPoint) ifFalse: [ ^ self ].
@@ -51,46 +51,46 @@ CVTLConsoleMorph >> characterAt: aPoint put: aCharacter [
 ]
 
 { #category : #api }
-CVTLConsoleMorph >> clearScreen [
+VTLConsoleMorph >> clearScreen [
 
 	screen := Array new: screenSize y withAll: ''.
 	cursor := 0 @ 0
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> currentLine [
+VTLConsoleMorph >> currentLine [
 	^ screen at: cursor y + 1
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> currentLine: aString [
+VTLConsoleMorph >> currentLine: aString [
 	screen at: cursor y + 1 put: aString
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> cursor [
+VTLConsoleMorph >> cursor [
 
 	^ cursor
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> cursor: anObject [
+VTLConsoleMorph >> cursor: anObject [
 
 	cursor := anObject
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> defaultFont [
+VTLConsoleMorph >> defaultFont [
 	^ StandardFonts codeFont
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> defaultScreenSize [
+VTLConsoleMorph >> defaultScreenSize [
 	^ 80 @ 25
 ]
 
 { #category : #drawing }
-CVTLConsoleMorph >> drawCursorOn: aCanvas [
+VTLConsoleMorph >> drawCursorOn: aCanvas [
 
 	| pos c |
 	c := self characterAt: cursor.
@@ -104,14 +104,14 @@ CVTLConsoleMorph >> drawCursorOn: aCanvas [
 ]
 
 { #category : #drawing }
-CVTLConsoleMorph >> drawOn: aCanvas [
+VTLConsoleMorph >> drawOn: aCanvas [
 	super drawOn: aCanvas.
 	self drawScreenOn: aCanvas.
 	self drawCursorOn: aCanvas
 ]
 
 { #category : #drawing }
-CVTLConsoleMorph >> drawScreenOn: aCanvas [
+VTLConsoleMorph >> drawScreenOn: aCanvas [
 
 	| pos |
 	pos := self topLeft.
@@ -125,7 +125,7 @@ CVTLConsoleMorph >> drawScreenOn: aCanvas [
 ]
 
 { #category : #geometry }
-CVTLConsoleMorph >> extent: aPoint [
+VTLConsoleMorph >> extent: aPoint [
 
 	| old |
 	old := self extent.
@@ -136,13 +136,13 @@ CVTLConsoleMorph >> extent: aPoint [
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> font [
+VTLConsoleMorph >> font [
 
 	^ font
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> font: anObject [
+VTLConsoleMorph >> font: anObject [
 
 	font := anObject.
 	self updateCharExtent.
@@ -150,25 +150,25 @@ CVTLConsoleMorph >> font: anObject [
 ]
 
 { #category : #api }
-CVTLConsoleMorph >> goto: aPoint [
+VTLConsoleMorph >> goto: aPoint [
 
 	(self withinScreen: aPoint) ifFalse: [ ^ cursor := 0 @ 0 ].
 	cursor := aPoint
 ]
 
 { #category : #'event handling' }
-CVTLConsoleMorph >> handlesKeyboard: evt [
+VTLConsoleMorph >> handlesKeyboard: evt [
 
 	^ true
 ]
 
 { #category : #'event handling' }
-CVTLConsoleMorph >> handlesMouseDown: evt [
+VTLConsoleMorph >> handlesMouseDown: evt [
 	^ true
 ]
 
 { #category : #initialization }
-CVTLConsoleMorph >> initialize [
+VTLConsoleMorph >> initialize [
 	super initialize.
 	self color: Color black.
 	screenSize := self defaultScreenSize.
@@ -179,7 +179,7 @@ CVTLConsoleMorph >> initialize [
 ]
 
 { #category : #'event handling' }
-CVTLConsoleMorph >> keyDown: event [
+VTLConsoleMorph >> keyDown: event [
 
 	| c |
 	c := event keyCharacter asciiValue.
@@ -189,20 +189,20 @@ CVTLConsoleMorph >> keyDown: event [
 ]
 
 { #category : #'event handling' }
-CVTLConsoleMorph >> keyStroke: event [
+VTLConsoleMorph >> keyStroke: event [
 
 	whenKeyPressed ifNotNil: [ 
 		whenKeyPressed value: event keyCharacter asciiValue ]
 ]
 
 { #category : #'event handling' }
-CVTLConsoleMorph >> mouseDown: evt [
+VTLConsoleMorph >> mouseDown: evt [
 
 	self activeHand newKeyboardFocus: self
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> newLine [
+VTLConsoleMorph >> newLine [
 
 	| line |
 	(self withinScreen: cursor) ifFalse: [ ^ self ].
@@ -216,7 +216,7 @@ CVTLConsoleMorph >> newLine [
 ]
 
 { #category : #api }
-CVTLConsoleMorph >> put: aString [
+VTLConsoleMorph >> put: aString [
 
 	aString do: [ :each | 
 		(each = Character lf or: [ each = Character cr ])
@@ -225,7 +225,7 @@ CVTLConsoleMorph >> put: aString [
 ]
 
 { #category : #api }
-CVTLConsoleMorph >> putAsciiValue: anInteger [
+VTLConsoleMorph >> putAsciiValue: anInteger [
 
 	anInteger = Character lf asciiValue ifTrue: [ ^ self ].
 	anInteger = Character cr asciiValue ifTrue: [ 
@@ -239,7 +239,7 @@ CVTLConsoleMorph >> putAsciiValue: anInteger [
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> putChar: aCharacter [
+VTLConsoleMorph >> putChar: aCharacter [
 
 	self characterAt: cursor put: aCharacter.
 	cursor := cursor + (1 @ 0).
@@ -251,25 +251,25 @@ CVTLConsoleMorph >> putChar: aCharacter [
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> screen [
+VTLConsoleMorph >> screen [
 
 	^ screen
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> screen: anObject [
+VTLConsoleMorph >> screen: anObject [
 
 	screen := anObject
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> screenSize [
+VTLConsoleMorph >> screenSize [
 
 	^ screenSize
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> screenSize: anObject [
+VTLConsoleMorph >> screenSize: anObject [
 
 	screenSize := anObject.
 	self clearScreen.
@@ -277,7 +277,7 @@ CVTLConsoleMorph >> screenSize: anObject [
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> scroll: anInteger [
+VTLConsoleMorph >> scroll: anInteger [
 
 	anInteger >= screenSize y ifTrue: [ ^ self clearScreen ].
 	screen := (screen
@@ -286,35 +286,35 @@ CVTLConsoleMorph >> scroll: anInteger [
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> textColor [
+VTLConsoleMorph >> textColor [
 	^ Color green
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> updateCharExtent [
+VTLConsoleMorph >> updateCharExtent [
 	charExtent := (font linearWidthOf: $M) @ font height
 ]
 
 { #category : #private }
-CVTLConsoleMorph >> updateExtent [
+VTLConsoleMorph >> updateExtent [
 
 	super extent: screenSize * charExtent
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> whenKeyPressed [
+VTLConsoleMorph >> whenKeyPressed [
 
 	^ whenKeyPressed
 ]
 
 { #category : #accessing }
-CVTLConsoleMorph >> whenKeyPressed: anObject [
+VTLConsoleMorph >> whenKeyPressed: anObject [
 
 	whenKeyPressed := anObject
 ]
 
 { #category : #testing }
-CVTLConsoleMorph >> withinScreen: aPoint [
+VTLConsoleMorph >> withinScreen: aPoint [
 
 	^ aPoint >= (0 @ 0) and: [ aPoint < screenSize ]
 ]

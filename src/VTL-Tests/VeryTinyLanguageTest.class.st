@@ -2,57 +2,57 @@
 A CVTLTest is a test class for testing the behavior of CVTL
 "
 Class {
-	#name : #CVTLTest,
+	#name : #VeryTinyLanguageTest,
 	#superclass : #TestCase,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #constants }
-CVTLTest >> defaultRandomSeed [
+VeryTinyLanguageTest >> defaultRandomSeed [
 
 	^ 12345
 ]
 
 { #category : #constants }
-CVTLTest >> memorySize [
+VeryTinyLanguageTest >> memorySize [
 
 	^ 1024 * 32
 ]
 
 { #category : #'instance creation' }
-CVTLTest >> newContext: anInteger [
+VeryTinyLanguageTest >> newContext: anInteger [
 
-	^ CVTLContext pos: anInteger
+	^ VTLContext position: anInteger
 ]
 
 { #category : #'instance creation' }
-CVTLTest >> newMemory: anInteger [
+VeryTinyLanguageTest >> newMemory: anInteger [
 
-	^ CVTLMemory new
+	^ VTLMemory new
 		  allocate: anInteger;
 		  yourself
 ]
 
 { #category : #'instance creation' }
-CVTLTest >> newObj [
+VeryTinyLanguageTest >> newObj [
 
-	^ CVTL new
+	^ VeryTinyLanguage new
 ]
 
 { #category : #'instance creation' }
-CVTLTest >> newStatus [
+VeryTinyLanguageTest >> newStatus [
 
-	^ CVTLStatus new
+	^ VTLStatus new
 ]
 
 { #category : #'instance creation' }
-CVTLTest >> newUI [
+VeryTinyLanguageTest >> newUI [
 
-	^ CVTLNonInteractiveUI new
+	^ VTLNonInteractiveUI new
 ]
 
 { #category : #private }
-CVTLTest >> setupFor: aCVTL [
+VeryTinyLanguageTest >> setupFor: aCVTL [
 
 	| memory |
 	memory := self newMemory: self memorySize.
@@ -63,7 +63,7 @@ CVTLTest >> setupFor: aCVTL [
 ]
 
 { #category : #private }
-CVTLTest >> setupProgram1 [
+VeryTinyLanguageTest >> setupProgram1 [
 
 	| obj memory ptr |
 	obj := self newObj.
@@ -86,10 +86,10 @@ CVTLTest >> setupProgram1 [
 ]
 
 { #category : #tests }
-CVTLTest >> testAddressForAsciiValue [
+VeryTinyLanguageTest >> testAddressForAsciiValue [
 
 	| obj r |
-	CVTL initialize.
+	VeryTinyLanguage initialize.
 	obj := self newObj.
 	r := obj addressForAsciiValue: $& asciiValue.
 	self assert: r equals: obj boundaryAddress.
@@ -298,7 +298,7 @@ CVTLTest >> testAddressForAsciiValue [
 ]
 
 { #category : #tests }
-CVTLTest >> testBoundary [
+VeryTinyLanguageTest >> testBoundary [
 
 	| obj memory |
 	obj := self newObj.
@@ -311,13 +311,13 @@ CVTLTest >> testBoundary [
 ]
 
 { #category : #tests }
-CVTLTest >> testBoundaryAddress [
+VeryTinyLanguageTest >> testBoundaryAddress [
 
 	self assert: self newObj boundaryAddress equals: 16r50
 ]
 
 { #category : #tests }
-CVTLTest >> testBreak [
+VeryTinyLanguageTest >> testBreak [
 
 	| obj |
 	obj := self newObj.
@@ -331,7 +331,7 @@ BREAK
 ]
 
 { #category : #tests }
-CVTLTest >> testCurrentLineNo [
+VeryTinyLanguageTest >> testCurrentLineNo [
 
 	| obj memory |
 	obj := self newObj.
@@ -344,13 +344,37 @@ CVTLTest >> testCurrentLineNo [
 ]
 
 { #category : #tests }
-CVTLTest >> testCurrentLineNoAddress [
+VeryTinyLanguageTest >> testCurrentLineNoAddress [
 
 	self assert: self newObj currentLineNoAddress equals: 16r4a
 ]
 
 { #category : #tests }
-CVTLTest >> testDeleteLineNo [
+VeryTinyLanguageTest >> testDecimalContext [
+
+	| obj num context |
+	obj := self newObj.
+	obj memory: (self newMemory: 256).
+	obj memory in: [ :m | 
+		m byteAt: 3 put: 49.
+		m byteAt: 4 put: 48.
+		m byteAt: 5 put: 50 ].
+	context := self newContext: 0.
+	num := obj decimalContext: context.
+	self assert: context position equals: 0.
+	self assert: num isNil.
+	context position: 3.
+	num := obj decimalContext: context.
+	self assert: context position equals: 6.
+	self assert: num equals: 102.
+	context position: 4.
+	num := obj decimalContext: context.
+	self assert: context position equals: 6.
+	self assert: num equals: 2
+]
+
+{ #category : #tests }
+VeryTinyLanguageTest >> testDeleteLineNo [
 
 	| obj org r |
 	obj := self setupProgram1.
@@ -396,7 +420,7 @@ CVTLTest >> testDeleteLineNo [
 ]
 
 { #category : #tests }
-CVTLTest >> testDoList [
+VeryTinyLanguageTest >> testDoList [
 
 	| obj |
 	obj := self setupProgram1.
@@ -409,19 +433,19 @@ CVTLTest >> testDoList [
 ]
 
 { #category : #tests }
-CVTLTest >> testDoOneCycle [
+VeryTinyLanguageTest >> testDoOneCycle [
 
 	self testDoOneCycle1.
 	self testDoOneCycle2
 ]
 
 { #category : #tests }
-CVTLTest >> testDoOneCycle1 [
+VeryTinyLanguageTest >> testDoOneCycle1 [
 
 	| obj ui p |
-	obj := CVTL new.
+	obj := self newObj.
 	self setupFor: obj.
-	ui := CVTLNonInteractiveUI new.
+	ui := self newUI.
 	ui addInput: '100 X=1'.
 	ui addInput: '110 Y=2'.
 	ui addInput: '120 Z=X+Y'.
@@ -462,12 +486,12 @@ CVTLTest >> testDoOneCycle1 [
 ]
 
 { #category : #tests }
-CVTLTest >> testDoOneCycle2 [
+VeryTinyLanguageTest >> testDoOneCycle2 [
 
 	| obj ui |
-	obj := CVTL new.
+	obj := self newObj.
 	self setupFor: obj.
-	ui := CVTLNonInteractiveUI new.
+	ui := self newUI.
 	ui addInput: '100 X=123'.
 	ui addInput: '#=1'.
 	obj ui: ui.
@@ -491,7 +515,7 @@ CVTLTest >> testDoOneCycle2 [
 ]
 
 { #category : #tests }
-CVTLTest >> testEntryIntoLineNo [
+VeryTinyLanguageTest >> testEntryIntoLineNo [
 
 	| obj memory |
 	obj := self newObj.
@@ -509,7 +533,7 @@ CVTLTest >> testEntryIntoLineNo [
 ]
 
 { #category : #tests }
-CVTLTest >> testEntryLineNo [
+VeryTinyLanguageTest >> testEntryLineNo [
 
 	| obj memory org pos |
 	obj := self newObj.
@@ -566,29 +590,7 @@ CVTLTest >> testEntryLineNo [
 ]
 
 { #category : #tests }
-CVTLTest >> testExecuteContext [
-
-	| obj pos ui context |
-	obj := CVTL new.
-	self setupFor: obj.
-	pos := obj programAddress.
-	obj memory copyString: '  "abc"' to: pos.
-	ui := CVTLNonInteractiveUI new.
-	obj ui: ui.
-	context := self newContext: pos.
-	obj executeContext: context.
-	self assert: obj ui outputString equals: 'abc
-'.
-	obj memory copyString: '  "abc";' to: pos.
-	ui := CVTLNonInteractiveUI new.
-	obj ui: ui.
-	context position: pos.
-	obj executeContext: context.
-	self assert: obj ui outputString equals: 'abc'
-]
-
-{ #category : #tests }
-CVTLTest >> testExecuteOnce [
+VeryTinyLanguageTest >> testExecuteOnce [
 
 	| obj pos status r |
 	obj := self setupProgram1.
@@ -616,19 +618,26 @@ CVTLTest >> testExecuteOnce [
 ]
 
 { #category : #tests }
-CVTLTest >> testExpressionContext [
+VeryTinyLanguageTest >> testExpressionContext [
 
 	| obj pos context r |
 	obj := self newObj.
 	self setupFor: obj.
 	pos := obj programAddress.
+
 	obj memory copyString: '1+2' to: pos.
 	context := self newContext: pos.
 	r := obj expressionContext: context.
 	self assert: r equals: 3.
 	self assert: context position equals: pos + 4.
-	pos := obj programAddress.
+
 	obj memory copyString: '1-2' to: pos.
+	context := self newContext: pos.
+	r := obj expressionContext: context.
+	self assert: r equals: 65535.
+	self assert: context position equals: pos + 4.
+
+	obj memory copyString: '1-2)' to: pos.
 	context := self newContext: pos.
 	r := obj expressionContext: context.
 	self assert: r equals: 65535.
@@ -636,10 +645,10 @@ CVTLTest >> testExpressionContext [
 ]
 
 { #category : #tests }
-CVTLTest >> testFactorContext [
+VeryTinyLanguageTest >> testFactorContext [
 
 	| obj pos context r |
-	obj := CVTL new.
+	obj := self newObj.
 	self setupFor: obj.
 	pos := obj programAddress.
 	obj memory byteAt: pos put: 0.
@@ -652,9 +661,9 @@ CVTLTest >> testFactorContext [
 	self assert: r equals: 123.
 	self assert: context position equals: pos + 3.
 	obj memory copyString: 'B' to: pos.
-	obj memory wordAt: (obj addressForAsciiValue: $a asciiValue) put: 10.
-	obj memory wordAt: (obj addressForAsciiValue: $b asciiValue) put: 20.
-	obj memory wordAt: (obj addressForAsciiValue: $c asciiValue) put: 30.
+	obj variableAt: $a put: 10.
+	obj variableAt: $b put: 20.
+	obj variableAt: $c put: 30.
 	context := self newContext: pos.
 	r := obj factorContext: context.
 	self assert: r equals: 20.
@@ -662,7 +671,7 @@ CVTLTest >> testFactorContext [
 ]
 
 { #category : #tests }
-CVTLTest >> testFindLine [
+VeryTinyLanguageTest >> testFindLine [
 
 	| obj r |
 	obj := self setupProgram1.
@@ -695,7 +704,7 @@ CVTLTest >> testFindLine [
 ]
 
 { #category : #tests }
-CVTLTest >> testGetAsciiValue [
+VeryTinyLanguageTest >> testGetAsciiValue [
 
 	| obj ui r |
 	obj := self newObj.
@@ -715,7 +724,7 @@ CVTLTest >> testGetAsciiValue [
 ]
 
 { #category : #tests }
-CVTLTest >> testGetLineInto [
+VeryTinyLanguageTest >> testGetLineInto [
 
 	| obj memory ui |
 	obj := self newObj.
@@ -739,53 +748,7 @@ CVTLTest >> testGetLineInto [
 ]
 
 { #category : #tests }
-CVTLTest >> testGetNumberContext [
-
-	| obj num context |
-	obj := self newObj.
-	obj memory: (self newMemory: 256).
-	obj memory in: [ :m | 
-		m byteAt: 3 put: 49.
-		m byteAt: 4 put: 48.
-		m byteAt: 5 put: 50 ].
-	context := self newContext: 0.
-	num := obj getNumberContext: context.
-	self assert: context position equals: 0.
-	self assert: num isNil.
-	context position: 3.
-	num := obj getNumberContext: context.
-	self assert: context position equals: 6.
-	self assert: num equals: 102.
-	context position: 4.
-	num := obj getNumberContext: context.
-	self assert: context position equals: 6.
-	self assert: num equals: 2
-]
-
-{ #category : #tests }
-CVTLTest >> testGetVariableContext [
-
-	| obj memory context pos arr |
-	obj := self newObj.
-	memory := self newMemory: 300.
-	obj memory: memory.
-	pos := obj programAddress.
-	context := self newContext: pos.
-	memory byteAt: pos put: $a asciiValue.
-	arr := obj getVariableContext: context.
-	self assert: context position equals: pos + 1.
-	self assert: arr first equals: $a asciiValue.
-	self assert: arr second equals: 6.
-	context position: pos.
-	memory byteAt: pos put: $# asciiValue.
-	arr := obj getVariableContext: context.
-	self assert: context position equals: pos + 1.
-	self assert: arr first equals: $# asciiValue.
-	self assert: arr second equals: obj currentLineNoAddress
-]
-
-{ #category : #tests }
-CVTLTest >> testIndexForAsciiValue [
+VeryTinyLanguageTest >> testIndexForAsciiValue [
 
 	| obj dict v c tmp |
 	obj := self newObj.
@@ -806,7 +769,7 @@ CVTLTest >> testIndexForAsciiValue [
 ]
 
 { #category : #tests }
-CVTLTest >> testInsertAt [
+VeryTinyLanguageTest >> testInsertAt [
 
 	| obj memory r |
 	obj := self newObj.
@@ -846,19 +809,19 @@ CVTLTest >> testInsertAt [
 ]
 
 { #category : #tests }
-CVTLTest >> testInvalidCharacterIndex [
+VeryTinyLanguageTest >> testInvalidCharacterIndex [
 
 	self assert: self newObj invalidCharacterIndex equals: 16r66
 ]
 
 { #category : #tests }
-CVTLTest >> testLineBufferAddress [
+VeryTinyLanguageTest >> testLineBufferAddress [
 
 	self assert: self newObj lineBufferAddress equals: 16r88
 ]
 
 { #category : #tests }
-CVTLTest >> testMemory [
+VeryTinyLanguageTest >> testMemory [
 
 	| obj memory |
 	obj := self newObj.
@@ -869,7 +832,7 @@ CVTLTest >> testMemory [
 ]
 
 { #category : #tests }
-CVTLTest >> testMemoryLimit [
+VeryTinyLanguageTest >> testMemoryLimit [
 
 	| obj memory |
 	obj := self newObj.
@@ -882,23 +845,23 @@ CVTLTest >> testMemoryLimit [
 ]
 
 { #category : #tests }
-CVTLTest >> testMemoryLimitAddress [
+VeryTinyLanguageTest >> testMemoryLimitAddress [
 
 	self assert: self newObj memoryLimitAddress equals: 16r58
 ]
 
 { #category : #tests }
-CVTLTest >> testNewContext [
+VeryTinyLanguageTest >> testNewContext [
 
 	| obj r |
 	obj := self newObj.
 	r := obj newContext: 123.
-	self assert: r class equals: CVTLContext.
+	self assert: r class equals: VTLContext.
 	self assert: r position equals: 123
 ]
 
 { #category : #tests }
-CVTLTest >> testNewStatus [
+VeryTinyLanguageTest >> testNewStatus [
 
 	| obj r |
 	obj := self newObj.
@@ -907,7 +870,7 @@ CVTLTest >> testNewStatus [
 ]
 
 { #category : #tests }
-CVTLTest >> testNextLineOf [
+VeryTinyLanguageTest >> testNextLineOf [
 
 	| obj org r |
 	obj := self setupProgram1.
@@ -921,19 +884,19 @@ CVTLTest >> testNextLineOf [
 ]
 
 { #category : #tests }
-CVTLTest >> testNumberBufferAddress [
+VeryTinyLanguageTest >> testNumberBufferAddress [
 
 	self assert: self newObj numberBufferAddress equals: 16r82
 ]
 
 { #category : #tests }
-CVTLTest >> testProgramAddress [
+VeryTinyLanguageTest >> testProgramAddress [
 
 	self assert: self newObj programAddress equals: 16r108
 ]
 
 { #category : #tests }
-CVTLTest >> testPutAsciiValue [
+VeryTinyLanguageTest >> testPutAsciiValue [
 
 	| obj ui |
 	obj := self newObj.
@@ -947,7 +910,7 @@ CVTLTest >> testPutAsciiValue [
 ]
 
 { #category : #tests }
-CVTLTest >> testPutCrlf [
+VeryTinyLanguageTest >> testPutCrlf [
 
 	| obj ui |
 	obj := self newObj.
@@ -959,7 +922,7 @@ CVTLTest >> testPutCrlf [
 ]
 
 { #category : #tests }
-CVTLTest >> testPutNumber [
+VeryTinyLanguageTest >> testPutNumber [
 
 	| obj ui |
 	obj := self newObj.
@@ -973,7 +936,7 @@ CVTLTest >> testPutNumber [
 ]
 
 { #category : #tests }
-CVTLTest >> testPutUntilContext [
+VeryTinyLanguageTest >> testPutUntilContext [
 
 	| obj ui context |
 	obj := self newObj.
@@ -989,25 +952,50 @@ CVTLTest >> testPutUntilContext [
 ]
 
 { #category : #tests }
-CVTLTest >> testRandomAddress [
+VeryTinyLanguageTest >> testRandomAddress [
 
 	self assert: self newObj randomAddress equals: 16r52
 ]
 
 { #category : #tests }
-CVTLTest >> testRemainderAddress [
+VeryTinyLanguageTest >> testRemainderAddress [
 
 	self assert: self newObj remainderAddress equals: 16r4e
 ]
 
 { #category : #tests }
-CVTLTest >> testSavedLineNoAddress [
+VeryTinyLanguageTest >> testSavedLineNoAddress [
 
 	self assert: self newObj savedLineNoAddress equals: 16r46
 ]
 
 { #category : #tests }
-CVTLTest >> testStatus [
+VeryTinyLanguageTest >> testStatementContext [
+
+	| obj pos ui context |
+	obj := self newObj.
+	self setupFor: obj.
+	pos := obj programAddress.
+	obj memory copyString: '?="abc"' to: pos.
+	ui := self newUI.
+	obj ui: ui.
+	context := self newContext: pos.
+	obj statementContext: context.
+	self assert: obj ui outputString equals: 'abc
+'.
+	self assert: context position equals: pos + 7.
+
+	obj memory copyString: '?="abc";' to: pos.
+	ui := self newUI.
+	obj ui: ui.
+	context position: pos.
+	obj statementContext: context.
+	self assert: obj ui outputString equals: 'abc'.
+	self assert: context position equals: pos + 8
+]
+
+{ #category : #tests }
+VeryTinyLanguageTest >> testStatus [
 
 	| obj status |
 	obj := self newObj.
@@ -1018,7 +1006,7 @@ CVTLTest >> testStatus [
 ]
 
 { #category : #tests }
-CVTLTest >> testTermContext [
+VeryTinyLanguageTest >> testTermContext [
 
 	| obj pos context r |
 	obj := self newObj.
@@ -1080,7 +1068,7 @@ CVTLTest >> testTermContext [
 ]
 
 { #category : #tests }
-CVTLTest >> testUi [
+VeryTinyLanguageTest >> testUi [
 
 	| obj arr |
 	obj := self newObj.
@@ -1091,7 +1079,7 @@ CVTLTest >> testUi [
 ]
 
 { #category : #tests }
-CVTLTest >> testUpdateRandom [
+VeryTinyLanguageTest >> testUpdateRandom [
 
 	| obj |
 	obj := self newObj.
@@ -1099,4 +1087,26 @@ CVTLTest >> testUpdateRandom [
 	self assert: (obj memory wordAt: obj randomAddress) equals: 12345.
 	obj updateRandom: 123.
 	self assert: (obj memory wordAt: obj randomAddress) equals: 16rB430
+]
+
+{ #category : #tests }
+VeryTinyLanguageTest >> testVariableContext [
+
+	| obj memory context pos arr |
+	obj := self newObj.
+	memory := self newMemory: 300.
+	obj memory: memory.
+	pos := obj programAddress.
+	context := self newContext: pos.
+	memory byteAt: pos put: $a asciiValue.
+	arr := obj variableContext: context.
+	self assert: context position equals: pos + 1.
+	self assert: arr first equals: $a asciiValue.
+	self assert: arr second equals: 6.
+	context position: pos.
+	memory byteAt: pos put: $# asciiValue.
+	arr := obj variableContext: context.
+	self assert: context position equals: pos + 1.
+	self assert: arr first equals: $# asciiValue.
+	self assert: arr second equals: obj currentLineNoAddress
 ]

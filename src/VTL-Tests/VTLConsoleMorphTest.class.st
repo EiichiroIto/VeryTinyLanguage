@@ -2,19 +2,19 @@
 A ScratchConsoleMorphTest is a test class for testing the behavior of ScratchConsoleMorph
 "
 Class {
-	#name : #CVTLConsoleMorphTest,
+	#name : #VTLConsoleMorphTest,
 	#superclass : #TestCase,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #private }
-CVTLConsoleMorphTest >> newMorph [
+VTLConsoleMorphTest >> newMorph [
 
-	^ CVTLConsoleMorph new
+	^ VTLConsoleMorph new
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testCharExtent [
+VTLConsoleMorphTest >> testCharExtent [
 
 	| m |
 	m := self newMorph.
@@ -24,7 +24,7 @@ CVTLConsoleMorphTest >> testCharExtent [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testCharacterAt [
+VTLConsoleMorphTest >> testCharacterAt [
 
 	| m |
 	m := self newMorph.
@@ -45,7 +45,7 @@ CVTLConsoleMorphTest >> testCharacterAt [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testCharacterAtPut [
+VTLConsoleMorphTest >> testCharacterAtPut [
 
 	| m |
 	m := self newMorph.
@@ -62,7 +62,7 @@ CVTLConsoleMorphTest >> testCharacterAtPut [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testClearScreen [
+VTLConsoleMorphTest >> testClearScreen [
 
 	| m |
 	m := self newMorph.
@@ -80,7 +80,7 @@ CVTLConsoleMorphTest >> testClearScreen [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testCurrentLine [
+VTLConsoleMorphTest >> testCurrentLine [
 
 	| m |
 	m := self newMorph.
@@ -98,7 +98,7 @@ CVTLConsoleMorphTest >> testCurrentLine [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testCursor [
+VTLConsoleMorphTest >> testCursor [
 
 	| m |
 	m := self newMorph.
@@ -108,13 +108,13 @@ CVTLConsoleMorphTest >> testCursor [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testDefaultScreenSize [
+VTLConsoleMorphTest >> testDefaultScreenSize [
 
 	self assert: self newMorph defaultScreenSize isPoint
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testFont [
+VTLConsoleMorphTest >> testFont [
 
 	| m f |
 	m := self newMorph.
@@ -125,7 +125,7 @@ CVTLConsoleMorphTest >> testFont [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testGoto [
+VTLConsoleMorphTest >> testGoto [
 
 	| m |
 	m := self newMorph.
@@ -138,7 +138,7 @@ CVTLConsoleMorphTest >> testGoto [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testNewLine [
+VTLConsoleMorphTest >> testNewLine [
 
 	| m |
 	m := self newMorph.
@@ -160,7 +160,7 @@ CVTLConsoleMorphTest >> testNewLine [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testPut [
+VTLConsoleMorphTest >> testPut [
 
 	| m |
 	m := self newMorph.
@@ -178,7 +178,7 @@ fg'.
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testPutChar [
+VTLConsoleMorphTest >> testPutChar [
 
 	| m |
 	m := self newMorph.
@@ -202,7 +202,7 @@ CVTLConsoleMorphTest >> testPutChar [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testScreen [
+VTLConsoleMorphTest >> testScreen [
 
 	| m a |
 	m := self newMorph.
@@ -213,7 +213,7 @@ CVTLConsoleMorphTest >> testScreen [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testScreenSize [
+VTLConsoleMorphTest >> testScreenSize [
 
 	| m |
 	m := self newMorph.
@@ -223,7 +223,7 @@ CVTLConsoleMorphTest >> testScreenSize [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testScroll [
+VTLConsoleMorphTest >> testScroll [
 
 	| m |
 	m := self newMorph.
@@ -247,13 +247,13 @@ CVTLConsoleMorphTest >> testScroll [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testTextColor [
+VTLConsoleMorphTest >> testTextColor [
 
 	self newMorph textColor isColor
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testUpdateCharExtent [
+VTLConsoleMorphTest >> testUpdateCharExtent [
 
 	| m |
 	m := self newMorph.
@@ -264,7 +264,7 @@ CVTLConsoleMorphTest >> testUpdateCharExtent [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testWhenKeyPressed [
+VTLConsoleMorphTest >> testWhenKeyPressed [
 
 	| morph block |
 	morph := self newMorph.
@@ -275,7 +275,7 @@ CVTLConsoleMorphTest >> testWhenKeyPressed [
 ]
 
 { #category : #tests }
-CVTLConsoleMorphTest >> testWithinScreen [
+VTLConsoleMorphTest >> testWithinScreen [
 
 	| m |
 	m := self newMorph.

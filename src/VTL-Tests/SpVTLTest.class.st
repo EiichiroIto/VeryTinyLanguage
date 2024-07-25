@@ -2,19 +2,19 @@
 A SpCVTLTest is a test class for testing the behavior of SpCVTL
 "
 Class {
-	#name : #SpCVTLTest,
+	#name : #SpVTLTest,
 	#superclass : #TestCase,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #'instance creation' }
-SpCVTLTest >> newApp [
+SpVTLTest >> newApp [
 
-	^ SpCVTL new
+	^ SpVTL new
 ]
 
 { #category : #tests }
-SpCVTLTest >> testGetAsciiValue [
+SpVTLTest >> testGetAsciiValue [
 
 	| app process x |
 	app := self newApp.
@@ -41,7 +41,7 @@ SpCVTLTest >> testGetAsciiValue [
 ]
 
 { #category : #tests }
-SpCVTLTest >> testKeyPressed [
+SpVTLTest >> testKeyPressed [
 
 	| app process x |
 	app := self newApp.

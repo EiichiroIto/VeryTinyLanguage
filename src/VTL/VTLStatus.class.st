@@ -1,60 +1,60 @@
 Class {
-	#name : #CVTLStatus,
+	#name : #VTLStatus,
 	#superclass : #Object,
 	#instVars : [
 		'state',
 		'topOfLine',
 		'position'
 	],
-	#category : #'CVTL-Core'
+	#category : #'VTL-Core'
 }
 
 { #category : #accessing }
-CVTLStatus >> bePrompted [
+VTLStatus >> bePrompted [
 
 	state := #prompted.
 	^ self
 ]
 
 { #category : #accessing }
-CVTLStatus >> beStepping [
+VTLStatus >> beStepping [
 
 	state := #stepping.
 	^ self
 ]
 
 { #category : #initialization }
-CVTLStatus >> initialize [
+VTLStatus >> initialize [
 
 	self bePrompted
 ]
 
 { #category : #testing }
-CVTLStatus >> isPrompted [
+VTLStatus >> isPrompted [
 
 	^ state = #prompted
 ]
 
 { #category : #testing }
-CVTLStatus >> isStepping [
+VTLStatus >> isStepping [
 
 	^ state = #stepping
 ]
 
 { #category : #accessing }
-CVTLStatus >> position [
+VTLStatus >> position [
 
 	^ position
 ]
 
 { #category : #accessing }
-CVTLStatus >> position: anInteger [
+VTLStatus >> position: anInteger [
 
 	position := anInteger
 ]
 
 { #category : #printing }
-CVTLStatus >> printOn: aStream [
+VTLStatus >> printOn: aStream [
 
 	aStream
 		nextPutAll: 'Status[state=';
@@ -67,25 +67,25 @@ CVTLStatus >> printOn: aStream [
 ]
 
 { #category : #accessing }
-CVTLStatus >> state [
+VTLStatus >> state [
 
 	^ state
 ]
 
 { #category : #accessing }
-CVTLStatus >> state: anObject [
+VTLStatus >> state: anObject [
 
 	state := anObject
 ]
 
 { #category : #accessing }
-CVTLStatus >> topOfLine [
+VTLStatus >> topOfLine [
 
 	^ topOfLine
 ]
 
 { #category : #accessing }
-CVTLStatus >> topOfLine: anObject [
+VTLStatus >> topOfLine: anObject [
 
 	topOfLine := anObject
 ]

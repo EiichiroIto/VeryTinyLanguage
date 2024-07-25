@@ -2,19 +2,19 @@
 A CVTLSamplesTest is a test class for testing the behavior of CVTLSamples
 "
 Class {
-	#name : #CVTLSamplesTest,
+	#name : #VTLSamplesTest,
 	#superclass : #TestCase,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #constants }
-CVTLSamplesTest >> defaultRandomSeed [
+VTLSamplesTest >> defaultRandomSeed [
 
 	^ 12345
 ]
 
 { #category : #private }
-CVTLSamplesTest >> execute: aString [
+VTLSamplesTest >> execute: aString [
 
 	| obj ui |
 	obj := self newObj.
@@ -30,44 +30,44 @@ CVTLSamplesTest >> execute: aString [
 ]
 
 { #category : #constants }
-CVTLSamplesTest >> memorySize [
+VTLSamplesTest >> memorySize [
 
 	^ 1024 * 32
 ]
 
 { #category : #'instance creation' }
-CVTLSamplesTest >> newObj [
+VTLSamplesTest >> newObj [
 
-	^ CVTL new
+	^ VeryTinyLanguage new
 ]
 
 { #category : #'instance creation' }
-CVTLSamplesTest >> newSamples [
+VTLSamplesTest >> newSamples [
 
-	^ CVTLSamples new
+	^ VTLSamples new
 ]
 
 { #category : #'instance creation' }
-CVTLSamplesTest >> newUI [
+VTLSamplesTest >> newUI [
 
-	^ CVTLNonInteractiveUI new
+	^ VTLNonInteractiveUI new
 ]
 
 { #category : #private }
-CVTLSamplesTest >> setupFor: aCVTL [
+VTLSamplesTest >> setupFor: aCVTL [
 
 	| memory |
-	memory := CVTLMemory new.
+	memory := VTLMemory new.
 	aCVTL memory: memory.
 	memory allocate: self memorySize.
 	aCVTL memoryLimit: self memorySize.
 	aCVTL boundary: aCVTL programAddress.
 	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed.
-	aCVTL status: CVTLStatus new
+	aCVTL status: VTLStatus new
 ]
 
 { #category : #tests }
-CVTLSamplesTest >> testSample1 [
+VTLSamplesTest >> testSample1 [
 
 	| samples ui |
 	samples := self newSamples.

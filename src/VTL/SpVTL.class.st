@@ -1,5 +1,5 @@
 Class {
-	#name : #SpCVTL,
+	#name : #SpVTL,
 	#superclass : #SpPresenter,
 	#instVars : [
 		'menu',
@@ -9,11 +9,11 @@ Class {
 		'toolBar',
 		'language'
 	],
-	#category : #'CVTL-UI'
+	#category : #'VTL-UI'
 }
 
 { #category : #'world menu' }
-SpCVTL class >> menuCommandOn: aBuilder [
+SpVTL class >> menuCommandOn: aBuilder [
 
 	<worldMenu>
 	(aBuilder item: 'CVTL')
@@ -24,20 +24,20 @@ SpCVTL class >> menuCommandOn: aBuilder [
 ]
 
 { #category : #'instance creation' }
-SpCVTL class >> open [
+SpVTL class >> open [
 
 	<script>
 	self new open
 ]
 
 { #category : #constants }
-SpCVTL >> appName [
+SpVTL >> appName [
 
 	^ 'Very Tiny Language'
 ]
 
 { #category : #constants }
-SpCVTL >> appText [
+SpVTL >> appText [
 
 	^ self appName , ' ' , self appVersion , String cr , String cr
 	  , 'Copyright © 2024 Eiichiro Ito (EiichiroIto@gmail.com)'
@@ -45,13 +45,13 @@ SpCVTL >> appText [
 ]
 
 { #category : #constants }
-SpCVTL >> appVersion [
+SpVTL >> appVersion [
 
 	^ '0.0.1'
 ]
 
 { #category : #process }
-SpCVTL >> breakProcess [
+SpVTL >> breakProcess [
 
 	self stopProcess.
 	language break.
@@ -59,7 +59,7 @@ SpCVTL >> breakProcess [
 ]
 
 { #category : #actions }
-SpCVTL >> clearScreen [
+SpVTL >> clearScreen [
 
 	output morph
 		clearScreen;
@@ -68,13 +68,13 @@ SpCVTL >> clearScreen [
 ]
 
 { #category : #initialization }
-SpCVTL >> connectPresenters [
+SpVTL >> connectPresenters [
 
 	output morph whenKeyPressed: [ :c | self keyPressed: c ]
 ]
 
 { #category : #layout }
-SpCVTL >> defaultLayout [
+SpVTL >> defaultLayout [
 
 	^ SpBoxLayout newVertical
 		  add: #menu expand: false;
@@ -84,13 +84,13 @@ SpCVTL >> defaultLayout [
 ]
 
 { #category : #constants }
-SpCVTL >> defaultRandomSeed [
+SpVTL >> defaultRandomSeed [
 
 	^ 12345
 ]
 
 { #category : #private }
-SpCVTL >> enterString: aString [
+SpVTL >> enterString: aString [
 
 	aString lines do: [ :each | 
 		inputQueue
@@ -100,7 +100,7 @@ SpCVTL >> enterString: aString [
 ]
 
 { #category : #process }
-SpCVTL >> executionLoop [
+SpVTL >> executionLoop [
 
 	[ 
 	language doOneCycle.
@@ -108,13 +108,13 @@ SpCVTL >> executionLoop [
 ]
 
 { #category : #constants }
-SpCVTL >> extension [
+SpVTL >> extension [
 
 	^ 'vtl'
 ]
 
 { #category : #initialization }
-SpCVTL >> fileMenu [
+SpVTL >> fileMenu [
 
 	| m |
 	m := self newMenu.
@@ -141,7 +141,7 @@ SpCVTL >> fileMenu [
 ]
 
 { #category : #accessing }
-SpCVTL >> getAsciiValue [
+SpVTL >> getAsciiValue [
 
 	inputQueue notEmpty ifTrue: [ ^ inputQueue removeFirst ].
 	process ifNil: [ ^ nil ].
@@ -151,7 +151,7 @@ SpCVTL >> getAsciiValue [
 ]
 
 { #category : #initialization }
-SpCVTL >> helpMenu [
+SpVTL >> helpMenu [
 
 	^ self newMenu
 		  addItem: [ :item | 
@@ -166,15 +166,15 @@ SpCVTL >> helpMenu [
 ]
 
 { #category : #initialization }
-SpCVTL >> initialize [
+SpVTL >> initialize [
 
-	self selectLanguage: CVTL.
+	self selectLanguage: VeryTinyLanguage.
 	inputQueue := OrderedCollection new.
 	super initialize
 ]
 
 { #category : #initialization }
-SpCVTL >> initializePresenters [
+SpVTL >> initializePresenters [
 
 	menu := self newMenuBar.
 	toolBar := self newToolbar
@@ -216,7 +216,7 @@ SpCVTL >> initializePresenters [
 ]
 
 { #category : #initialization }
-SpCVTL >> initializeWindow: aWindow [
+SpVTL >> initializeWindow: aWindow [
 
 	aWindow
 		whenClosedDo: [ self stopProcess ];
@@ -229,7 +229,7 @@ SpCVTL >> initializeWindow: aWindow [
 ]
 
 { #category : #actions }
-SpCVTL >> inputProgram [
+SpVTL >> inputProgram [
 
 	| ret |
 	ret := SpRequestTextDialog new
@@ -245,19 +245,19 @@ SpCVTL >> inputProgram [
 ]
 
 { #category : #accessing }
-SpCVTL >> inputQueue [
+SpVTL >> inputQueue [
 
 	^ inputQueue
 ]
 
 { #category : #accessing }
-SpCVTL >> inputQueue: anObject [
+SpVTL >> inputQueue: anObject [
 
 	inputQueue := anObject
 ]
 
 { #category : #process }
-SpCVTL >> keyPressed: anInteger [
+SpVTL >> keyPressed: anInteger [
 
 	anInteger = 0 ifTrue: [ ^ self ].
 	inputQueue add: anInteger.
@@ -265,12 +265,12 @@ SpCVTL >> keyPressed: anInteger [
 ]
 
 { #category : #initialization }
-SpCVTL >> languageMenu [
+SpVTL >> languageMenu [
 
 	| m classes |
 	m := self newMenu.
 	m addGroup: [ :grp | 
-		classes := CVTL withAllSubclasses sort: [ :a :b | a name < b name ].
+		classes := VeryTinyLanguage withAllSubclasses sort: [ :a :b | a name < b name ].
 		classes do: [ :each | 
 			grp addItem: [ :item | 
 				item
@@ -283,7 +283,7 @@ SpCVTL >> languageMenu [
 ]
 
 { #category : #actions }
-SpCVTL >> loadFile [
+SpVTL >> loadFile [
 
 	| file |
 	file := UIManager default
@@ -298,57 +298,57 @@ SpCVTL >> loadFile [
 ]
 
 { #category : #constants }
-SpCVTL >> memorySize [
+SpVTL >> memorySize [
 
 	^ 1024 * 32
 ]
 
 { #category : #'instance creation' }
-SpCVTL >> newConsoleMorph [
+SpVTL >> newConsoleMorph [
 
-	^ CVTLConsoleMorph new
+	^ VTLConsoleMorph new
 ]
 
 { #category : #'instance creation' }
-SpCVTL >> newMemory: anInteger [
+SpVTL >> newMemory: anInteger [
 
-	^ CVTLMemory new
+	^ VTLMemory new
 		  allocate: anInteger;
 		  yourself
 ]
 
 { #category : #accessing }
-SpCVTL >> output [
+SpVTL >> output [
 
 	^ output
 ]
 
 { #category : #accessing }
-SpCVTL >> output: anObject [
+SpVTL >> output: anObject [
 
 	output := anObject
 ]
 
 { #category : #accessing }
-SpCVTL >> process [
+SpVTL >> process [
 
 	^ process
 ]
 
 { #category : #accessing }
-SpCVTL >> process: anObject [
+SpVTL >> process: anObject [
 
 	process := anObject
 ]
 
 { #category : #accessing }
-SpCVTL >> putAsciiValue: anInteger [
+SpVTL >> putAsciiValue: anInteger [
 
 	output morph putAsciiValue: anInteger
 ]
 
 { #category : #process }
-SpCVTL >> resumeProcess [
+SpVTL >> resumeProcess [
 
 	process ifNil: [ ^ self ].
 	process isSuspended ifFalse: [ ^ self ].
@@ -356,7 +356,7 @@ SpCVTL >> resumeProcess [
 ]
 
 { #category : #actions }
-SpCVTL >> saveFile [
+SpVTL >> saveFile [
 
 	| file dummyUI |
 	file := UIManager default
@@ -365,7 +365,7 @@ SpCVTL >> saveFile [
 		        path: FileSystem workingDirectory.
 	file ifNil: [ ^ self ].
 	file := file withExtension: self extension.
-	dummyUI := CVTLNonInteractiveUI new.
+	dummyUI := VTLNonInteractiveUI new.
 	language ui in: [ :oldUI | 
 		[ 
 		language ui: dummyUI.
@@ -376,14 +376,14 @@ SpCVTL >> saveFile [
 ]
 
 { #category : #private }
-SpCVTL >> selectLanguage: aClass [
+SpVTL >> selectLanguage: aClass [
 
 	language := aClass new.
 	self setupFor: language
 ]
 
 { #category : #initialization }
-SpCVTL >> setupFor: aCVTL [
+SpVTL >> setupFor: aCVTL [
 
 	| memory |
 	memory := self newMemory: self memorySize.
@@ -394,7 +394,7 @@ SpCVTL >> setupFor: aCVTL [
 ]
 
 { #category : #initialization }
-SpCVTL >> setupMenu [
+SpVTL >> setupMenu [
 
 	menu
 		addItem: [ :item | 
@@ -412,7 +412,7 @@ SpCVTL >> setupMenu [
 ]
 
 { #category : #process }
-SpCVTL >> startProcess [
+SpVTL >> startProcess [
 
 	self stopProcess.
 	language ui: self.
@@ -422,7 +422,7 @@ SpCVTL >> startProcess [
 ]
 
 { #category : #process }
-SpCVTL >> stopProcess [
+SpVTL >> stopProcess [
 
 	process ifNil: [ ^ self ].
 	process terminate.

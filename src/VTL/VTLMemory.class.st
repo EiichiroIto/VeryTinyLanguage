@@ -1,32 +1,32 @@
 Class {
-	#name : #CVTLMemory,
+	#name : #VTLMemory,
 	#superclass : #Object,
 	#instVars : [
 		'core'
 	],
-	#category : #'CVTL-Core'
+	#category : #'VTL-Core'
 }
 
 { #category : #action }
-CVTLMemory >> allocate: anInteger [
+VTLMemory >> allocate: anInteger [
 
 	core := ByteArray new: anInteger withAll: 0
 ]
 
 { #category : #accessing }
-CVTLMemory >> byteAt: anInteger [
+VTLMemory >> byteAt: anInteger [
 
 	^ core at: anInteger + 1
 ]
 
 { #category : #accessing }
-CVTLMemory >> byteAt: anInteger put: anInteger2 [
+VTLMemory >> byteAt: anInteger put: anInteger2 [
 
 	core at: anInteger + 1 put: anInteger2
 ]
 
 { #category : #action }
-CVTLMemory >> copyByteFrom: anInteger to: anInteger2 [
+VTLMemory >> copyByteFrom: anInteger to: anInteger2 [
 
 	| tmp |
 	tmp := self byteAt: anInteger.
@@ -35,7 +35,7 @@ CVTLMemory >> copyByteFrom: anInteger to: anInteger2 [
 ]
 
 { #category : #action }
-CVTLMemory >> copyString: aString to: anInteger [
+VTLMemory >> copyString: aString to: anInteger [
 
 	aString withIndexDo: [ :each :index | 
 		self byteAt: anInteger + index - 1 put: each asciiValue ].
@@ -43,7 +43,7 @@ CVTLMemory >> copyString: aString to: anInteger [
 ]
 
 { #category : #action }
-CVTLMemory >> copyWordFrom: anInteger to: anInteger2 [
+VTLMemory >> copyWordFrom: anInteger to: anInteger2 [
 
 	| tmp |
 	tmp := self wordAt: anInteger.
@@ -52,19 +52,19 @@ CVTLMemory >> copyWordFrom: anInteger to: anInteger2 [
 ]
 
 { #category : #accessing }
-CVTLMemory >> core [
+VTLMemory >> core [
 
 	^ core
 ]
 
 { #category : #accessing }
-CVTLMemory >> core: anObject [
+VTLMemory >> core: anObject [
 
 	core := anObject
 ]
 
 { #category : #accessing }
-CVTLMemory >> countFrom: anInteger until: anInteger2 [
+VTLMemory >> countFrom: anInteger until: anInteger2 [
 
 	| count pos |
 	count := 0.
@@ -76,7 +76,7 @@ CVTLMemory >> countFrom: anInteger until: anInteger2 [
 ]
 
 { #category : #accessing }
-CVTLMemory >> stringFrom: anInteger until: anInteger2 [
+VTLMemory >> stringFrom: anInteger until: anInteger2 [
 
 	| stream pos c |
 	stream := WriteStream on: String new.
@@ -90,13 +90,13 @@ CVTLMemory >> stringFrom: anInteger until: anInteger2 [
 ]
 
 { #category : #accessing }
-CVTLMemory >> wordAt: anInteger [
+VTLMemory >> wordAt: anInteger [
 
 	^ (core at: anInteger + 1) + ((core at: anInteger + 2) * 256)
 ]
 
 { #category : #accessing }
-CVTLMemory >> wordAt: anInteger put: anInteger2 [
+VTLMemory >> wordAt: anInteger put: anInteger2 [
 
 	core at: anInteger + 1 put: anInteger2 \\ 256.
 	core at: anInteger + 2 put: anInteger2 // 256

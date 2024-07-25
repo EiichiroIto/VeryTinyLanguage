@@ -1,21 +1,21 @@
 Class {
-	#name : #CVTLNonInteractiveUI,
+	#name : #VTLNonInteractiveUI,
 	#superclass : #Object,
 	#instVars : [
 		'output',
 		'input'
 	],
-	#category : #'CVTL-UI'
+	#category : #'VTL-UI'
 }
 
 { #category : #accessing }
-CVTLNonInteractiveUI >> addInput: aString [
+VTLNonInteractiveUI >> addInput: aString [
 
 	input add: aString
 ]
 
 { #category : #accessing }
-CVTLNonInteractiveUI >> getAsciiValue [
+VTLNonInteractiveUI >> getAsciiValue [
 
 	| line |
 	input isEmpty ifTrue: [ ^ nil ].
@@ -27,45 +27,45 @@ CVTLNonInteractiveUI >> getAsciiValue [
 ]
 
 { #category : #initialization }
-CVTLNonInteractiveUI >> initialize [
+VTLNonInteractiveUI >> initialize [
 
 	output := OrderedCollection new.
 	input := OrderedCollection new
 ]
 
 { #category : #accessing }
-CVTLNonInteractiveUI >> input [
+VTLNonInteractiveUI >> input [
 
 	^ input
 ]
 
 { #category : #accessing }
-CVTLNonInteractiveUI >> input: anObject [
+VTLNonInteractiveUI >> input: anObject [
 
 	input := anObject
 ]
 
 { #category : #accessing }
-CVTLNonInteractiveUI >> output [
+VTLNonInteractiveUI >> output [
 
 	^ output
 ]
 
 { #category : #accessing }
-CVTLNonInteractiveUI >> output: anObject [
+VTLNonInteractiveUI >> output: anObject [
 
 	output := anObject
 ]
 
 { #category : #accessing }
-CVTLNonInteractiveUI >> outputString [
+VTLNonInteractiveUI >> outputString [
 
 	^ String fromByteArray:
 		  (output reject: [ :each | each = 10 ]) asByteArray
 ]
 
 { #category : #'input/output' }
-CVTLNonInteractiveUI >> putAsciiValue: anInteger [
+VTLNonInteractiveUI >> putAsciiValue: anInteger [
 
 	output add: anInteger
 ]

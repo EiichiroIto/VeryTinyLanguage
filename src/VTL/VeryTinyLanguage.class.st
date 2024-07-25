@@ -1,5 +1,5 @@
 Class {
-	#name : #CVTL,
+	#name : #VeryTinyLanguage,
 	#superclass : #Object,
 	#instVars : [
 		'memory',
@@ -9,18 +9,18 @@ Class {
 	#classVars : [
 		'VariableTable'
 	],
-	#category : #'CVTL-Core'
+	#category : #'VTL-Core'
 }
 
 { #category : #'class initialization' }
-CVTL class >> initialize [
+VeryTinyLanguage class >> initialize [
 	"CVTL initialize"
 
 	VariableTable := self variableTable
 ]
 
 { #category : #private }
-CVTL class >> variableTable [
+VeryTinyLanguage class >> variableTable [
 
 	| obj arr |
 	obj := self new.
@@ -31,32 +31,32 @@ CVTL class >> variableTable [
 ]
 
 { #category : #accessing }
-CVTL >> addressForAsciiValue: anInteger [
+VeryTinyLanguage >> addressForAsciiValue: anInteger [
 
 	VariableTable ifNil: [ self class initialize ].
 	^ 2 * ((VariableTable at: anInteger + 1) + 2)
 ]
 
 { #category : #accessing }
-CVTL >> boundary [
+VeryTinyLanguage >> boundary [
 
 	^ memory wordAt: self boundaryAddress
 ]
 
 { #category : #accessing }
-CVTL >> boundary: anInteger [
+VeryTinyLanguage >> boundary: anInteger [
 
 	memory wordAt: self boundaryAddress put: anInteger
 ]
 
 { #category : #constants }
-CVTL >> boundaryAddress [
+VeryTinyLanguage >> boundaryAddress [
 
 	^ 2 * (2 + $& asciiValue)
 ]
 
 { #category : #action }
-CVTL >> break [
+VeryTinyLanguage >> break [
 
 	self
 		putCrlf;
@@ -70,25 +70,40 @@ CVTL >> break [
 ]
 
 { #category : #accessing }
-CVTL >> currentLineNo [
+VeryTinyLanguage >> currentLineNo [
 
 	^ memory wordAt: self currentLineNoAddress
 ]
 
 { #category : #accessing }
-CVTL >> currentLineNo: anInteger [
+VeryTinyLanguage >> currentLineNo: anInteger [
 
 	memory wordAt: self currentLineNoAddress put: anInteger
 ]
 
 { #category : #constants }
-CVTL >> currentLineNoAddress [
+VeryTinyLanguage >> currentLineNoAddress [
 
 	^ 2 * (2 + $# asciiValue)
 ]
 
 { #category : #private }
-CVTL >> deleteLineNo: anInteger [
+VeryTinyLanguage >> decimalContext: aContext [
+
+	| c ch num |
+	c := aContext byteIn: memory.
+	(Character value: c) isDigit ifFalse: [ ^ nil ].
+	num := 0.
+	[ (ch := Character value: c) isDigit ] whileTrue: [ 
+		num := num * 10.
+		num := num + ch digitValue.
+		aContext increment.
+		c := aContext byteIn: memory ].
+	^ num
+]
+
+{ #category : #private }
+VeryTinyLanguage >> deleteLineNo: anInteger [
 
 	| cur src dst boundary |
 	self currentLineNo: anInteger.
@@ -107,7 +122,7 @@ CVTL >> deleteLineNo: anInteger [
 ]
 
 { #category : #action }
-CVTL >> doList [
+VeryTinyLanguage >> doList [
 
 	| context num boundary |
 	context := self newContext: self programAddress.
@@ -123,14 +138,14 @@ CVTL >> doList [
 ]
 
 { #category : #action }
-CVTL >> doOneCycle [
+VeryTinyLanguage >> doOneCycle [
 
 	| pos context lineNo |
 	status isPrompted ifTrue: [ 
 		pos := self lineBufferAddress + 2.
 		self getLineInto: pos.
 		context := self newContext: pos.
-		lineNo := self getNumberContext: context.
+		lineNo := self decimalContext: context.
 		lineNo ifNotNil: [ 
 			^ lineNo = 0
 				  ifTrue: [ self doList ]
@@ -155,7 +170,7 @@ CVTL >> doOneCycle [
 ]
 
 { #category : #private }
-CVTL >> entry: anInteger into: anInteger2 lineNo: anInteger3 [
+VeryTinyLanguage >> entry: anInteger into: anInteger2 lineNo: anInteger3 [
 
 	| src dst tmp |
 	memory wordAt: anInteger2 put: anInteger3.
@@ -169,7 +184,7 @@ CVTL >> entry: anInteger into: anInteger2 lineNo: anInteger3 [
 ]
 
 { #category : #private }
-CVTL >> entry: anInteger lineNo: anInteger2 [
+VeryTinyLanguage >> entry: anInteger lineNo: anInteger2 [
 
 	| cur count |
 	cur := self deleteLineNo: anInteger2.
@@ -181,33 +196,10 @@ CVTL >> entry: anInteger lineNo: anInteger2 [
 ]
 
 { #category : #private }
-CVTL >> executeContext: aContext [
-
-	| tmp c address c2 value |
-	tmp := self getVariableContext: aContext.
-	c := tmp first.
-	address := tmp second.
-	aContext increment.
-	c2 := aContext byteIn: memory.
-	c2 = $" asciiValue ifTrue: [ 
-		aContext increment.
-		self putUntil: $" asciiValue context: aContext.
-		c2 := aContext byteIn: memory.
-		c2 = $; asciiValue ifFalse: [ self putCrlf ].
-		^ self ].
-	value := self expressionContext: aContext.
-	c = $$ asciiValue ifTrue: [ 
-		^ self putAsciiValue: (value bitAnd: 16rFF) ].
-	c = $? asciiValue ifTrue: [ ^ self putNumber: value ].
-	memory wordAt: address put: value.
-	self updateRandom: value
-]
-
-{ #category : #private }
-CVTL >> executeOnce [
+VeryTinyLanguage >> executeOnce [
 
 	| lineNo r2 |
-	self executeContext: (self newContext: status position).
+	self statementContext: (self newContext: status position).
 	lineNo := self currentLineNo.
 	r2 := memory wordAt: status topOfLine.
 	(lineNo = 0 or: [ lineNo = r2 ])
@@ -227,7 +219,7 @@ CVTL >> executeOnce [
 ]
 
 { #category : #private }
-CVTL >> expressionContext: aContext [
+VeryTinyLanguage >> expressionContext: aContext [
 
 	| value c |
 	value := self factorContext: aContext.
@@ -240,12 +232,12 @@ CVTL >> expressionContext: aContext [
 ]
 
 { #category : #private }
-CVTL >> factorContext: aContext [
+VeryTinyLanguage >> factorContext: aContext [
 
 	| c tmp |
 	c := aContext byteIn: memory.
 	c = 0 ifTrue: [ ^ 0 ].
-	tmp := self getNumberContext: aContext.
+	tmp := self decimalContext: aContext.
 	tmp ifNotNil: [ ^ tmp ].
 	c := aContext byteIn: memory.
 	aContext increment.
@@ -256,12 +248,12 @@ CVTL >> factorContext: aContext [
 	c = $$ asciiValue ifTrue: [ ^ self getAsciiValue ].
 	c = $( asciiValue ifTrue: [ ^ self expressionContext: aContext ].
 	aContext decrement.
-	tmp := self getVariableContext: aContext.
+	tmp := self variableContext: aContext.
 	^ memory wordAt: tmp second
 ]
 
 { #category : #private }
-CVTL >> findLine [
+VeryTinyLanguage >> findLine [
 
 	| pos v boundary currentLine |
 	boundary := self boundary.
@@ -276,13 +268,13 @@ CVTL >> findLine [
 ]
 
 { #category : #'input/output' }
-CVTL >> getAsciiValue [
+VeryTinyLanguage >> getAsciiValue [
 
 	^ ui getAsciiValue
 ]
 
 { #category : #'input/output' }
-CVTL >> getLineInto: anInteger [
+VeryTinyLanguage >> getLineInto: anInteger [
 
 	| pos c |
 	pos := 0.
@@ -306,38 +298,7 @@ CVTL >> getLineInto: anInteger [
 ]
 
 { #category : #private }
-CVTL >> getNumberContext: aContext [
-
-	| c num pos |
-	pos := aContext position.
-	c := memory byteAt: pos.
-	(Character value: c) isDigit ifFalse: [ ^ nil ].
-	num := 0.
-	[ (Character value: c) isDigit ] whileTrue: [ 
-		num := num * 10.
-		num := num + (c - $0 asciiValue).
-		pos := pos + 1.
-		c := memory byteAt: pos ].
-	aContext position: pos.
-	^ num
-]
-
-{ #category : #private }
-CVTL >> getVariableContext: aContext [
-
-	| c value address |
-	c := aContext byteIn: memory.
-	aContext increment.
-	c = $: asciiValue
-		ifTrue: [ 
-			value := self expressionContext: aContext.
-			address := self boundary + (value * 2) ]
-		ifFalse: [ address := self addressForAsciiValue: c ].
-	^ Array with: c with: address
-]
-
-{ #category : #private }
-CVTL >> indexForAsciiValue: anInteger [
+VeryTinyLanguage >> indexForAsciiValue: anInteger [
 
 	anInteger = Character delete asciiValue ifTrue: [ 
 		^ self invalidCharacterIndex ].
@@ -354,13 +315,13 @@ CVTL >> indexForAsciiValue: anInteger [
 ]
 
 { #category : #initialization }
-CVTL >> initialize [
+VeryTinyLanguage >> initialize [
 
 	status := self newStatus
 ]
 
 { #category : #private }
-CVTL >> insert: anInteger at: anInteger2 [
+VeryTinyLanguage >> insert: anInteger at: anInteger2 [
 
 	| boundary limit src dst |
 	boundary := self boundary.
@@ -378,61 +339,61 @@ CVTL >> insert: anInteger at: anInteger2 [
 ]
 
 { #category : #constants }
-CVTL >> invalidCharacterIndex [
+VeryTinyLanguage >> invalidCharacterIndex [
 
 	^ 16r66
 ]
 
 { #category : #constants }
-CVTL >> lineBufferAddress [
+VeryTinyLanguage >> lineBufferAddress [
 
 	^ 16r88
 ]
 
 { #category : #accessing }
-CVTL >> memory [
+VeryTinyLanguage >> memory [
 
 	^ memory
 ]
 
 { #category : #accessing }
-CVTL >> memory: anObject [
+VeryTinyLanguage >> memory: anObject [
 
 	memory := anObject
 ]
 
 { #category : #accessing }
-CVTL >> memoryLimit [
+VeryTinyLanguage >> memoryLimit [
 
 	^ memory wordAt: self memoryLimitAddress
 ]
 
 { #category : #accessing }
-CVTL >> memoryLimit: anInteger [
+VeryTinyLanguage >> memoryLimit: anInteger [
 
 	memory wordAt: self memoryLimitAddress put: anInteger
 ]
 
 { #category : #constants }
-CVTL >> memoryLimitAddress [
+VeryTinyLanguage >> memoryLimitAddress [
 
 	^ 2 * (2 + $* asciiValue)
 ]
 
 { #category : #'instance creation' }
-CVTL >> newContext: anInteger [
+VeryTinyLanguage >> newContext: anInteger [
 
-	^ CVTLContext pos: anInteger
+	^ VTLContext position: anInteger
 ]
 
 { #category : #'instance creation' }
-CVTL >> newStatus [
+VeryTinyLanguage >> newStatus [
 
-	^ CVTLStatus new
+	^ VTLStatus new
 ]
 
 { #category : #private }
-CVTL >> nextLineOf: anInteger [
+VeryTinyLanguage >> nextLineOf: anInteger [
 
 	| pos c |
 	pos := anInteger + 2.
@@ -444,25 +405,25 @@ CVTL >> nextLineOf: anInteger [
 ]
 
 { #category : #constants }
-CVTL >> numberBufferAddress [
+VeryTinyLanguage >> numberBufferAddress [
 
 	^ 16r82
 ]
 
 { #category : #constants }
-CVTL >> programAddress [
+VeryTinyLanguage >> programAddress [
 
 	^ 16r108
 ]
 
 { #category : #'input/output' }
-CVTL >> putAsciiValue: anInteger [
+VeryTinyLanguage >> putAsciiValue: anInteger [
 
 	ui putAsciiValue: anInteger
 ]
 
 { #category : #'input/output' }
-CVTL >> putCrlf [
+VeryTinyLanguage >> putCrlf [
 
 	self
 		putAsciiValue: Character cr asciiValue;
@@ -470,7 +431,7 @@ CVTL >> putCrlf [
 ]
 
 { #category : #'input/output' }
-CVTL >> putNumber: anInteger [
+VeryTinyLanguage >> putNumber: anInteger [
 
 	| pos x y |
 	x := anInteger.
@@ -485,7 +446,7 @@ CVTL >> putNumber: anInteger [
 ]
 
 { #category : #'input/output' }
-CVTL >> putUntil: anInteger context: aContext [
+VeryTinyLanguage >> putUntil: anInteger context: aContext [
 
 	| c |
 	[ 
@@ -497,37 +458,62 @@ CVTL >> putUntil: anInteger context: aContext [
 ]
 
 { #category : #constants }
-CVTL >> randomAddress [
+VeryTinyLanguage >> randomAddress [
 
 	^ 2 * (2 + $' asciiValue)
 ]
 
 { #category : #constants }
-CVTL >> remainderAddress [
+VeryTinyLanguage >> remainderAddress [
 
 	^ 2 * (2 + $% asciiValue)
 ]
 
 { #category : #constants }
-CVTL >> savedLineNoAddress [
+VeryTinyLanguage >> savedLineNoAddress [
 
 	^ 2 * (2 + $! asciiValue)
 ]
 
+{ #category : #private }
+VeryTinyLanguage >> statementContext: aContext [
+
+	| tmp c address c2 value |
+	tmp := self variableContext: aContext.
+	c := tmp first.
+	address := tmp second.
+	aContext increment.
+	c2 := aContext byteIn: memory.
+	c2 = $" asciiValue ifTrue: [ 
+		aContext increment.
+		self putUntil: $" asciiValue context: aContext.
+		c2 := aContext byteIn: memory.
+		c2 = $; asciiValue
+			ifTrue: [ aContext increment ]
+			ifFalse: [ self putCrlf ].
+		^ self ].
+	value := self expressionContext: aContext.
+	c = $$ asciiValue ifTrue: [ 
+		^ self putAsciiValue: (value bitAnd: 16rFF) ].
+	c = $? asciiValue ifTrue: [ ^ self putNumber: value ].
+	memory wordAt: address put: value.
+	self updateRandom: value
+]
+
 { #category : #accessing }
-CVTL >> status [
+VeryTinyLanguage >> status [
 
 	^ status
 ]
 
 { #category : #accessing }
-CVTL >> status: anObject [
+VeryTinyLanguage >> status: anObject [
 
 	status := anObject
 ]
 
 { #category : #private }
-CVTL >> term: anInteger context: aContext [
+VeryTinyLanguage >> term: anInteger context: aContext [
 
 	| c value |
 	c := aContext byteIn: memory.
@@ -545,23 +531,57 @@ CVTL >> term: anInteger context: aContext [
 ]
 
 { #category : #accessing }
-CVTL >> ui [
+VeryTinyLanguage >> ui [
 
 	^ ui
 ]
 
 { #category : #accessing }
-CVTL >> ui: anObject [
+VeryTinyLanguage >> ui: anObject [
 
 	ui := anObject
 ]
 
 { #category : #private }
-CVTL >> updateRandom: anInteger [
+VeryTinyLanguage >> updateRandom: anInteger [
 
 	| tmp |
 	tmp := memory wordAt: self randomAddress.
 	tmp := tmp + anInteger.
 	tmp := (tmp << 8 bitAnd: 16rFF00) + (tmp >> 8 bitAnd: 16rFF).
 	memory wordAt: self randomAddress put: tmp
+]
+
+{ #category : #accessing }
+VeryTinyLanguage >> variableAt: anObject [
+
+	| asciiValue |
+	asciiValue := anObject isCharacter
+		              ifTrue: [ anObject asciiValue ]
+		              ifFalse: [ anObject asInteger ].
+	^ memory wordAt: (self addressForAsciiValue: asciiValue)
+]
+
+{ #category : #accessing }
+VeryTinyLanguage >> variableAt: anObject put: anInteger [
+
+	| asciiValue |
+	asciiValue := anObject isCharacter
+		              ifTrue: [ anObject asciiValue ]
+		              ifFalse: [ anObject asInteger ].
+	memory wordAt: (self addressForAsciiValue: asciiValue) put: anInteger
+]
+
+{ #category : #private }
+VeryTinyLanguage >> variableContext: aContext [
+
+	| c value address |
+	c := aContext byteIn: memory.
+	aContext increment.
+	c = $: asciiValue
+		ifTrue: [ 
+			value := self expressionContext: aContext.
+			address := self boundary + (value * 2) ]
+		ifFalse: [ address := self addressForAsciiValue: c ].
+	^ Array with: c with: address
 ]

@@ -2,19 +2,19 @@
 A CVTLMemoryTest is a test class for testing the behavior of CVTLMemory
 "
 Class {
-	#name : #CVTLMemoryTest,
+	#name : #VTLMemoryTest,
 	#superclass : #TestCase,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #'instance creation' }
-CVTLMemoryTest >> newObj [
+VTLMemoryTest >> newObj [
 
-	^ CVTLMemory new
+	^ VTLMemory new
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testAllocate [
+VTLMemoryTest >> testAllocate [
 
 	| obj |
 	obj := self newObj.
@@ -25,7 +25,7 @@ CVTLMemoryTest >> testAllocate [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testByteAt [
+VTLMemoryTest >> testByteAt [
 
 	| obj |
 	obj := self newObj.
@@ -39,7 +39,7 @@ CVTLMemoryTest >> testByteAt [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testByteAtPut [
+VTLMemoryTest >> testByteAtPut [
 
 	| obj |
 	obj := self newObj.
@@ -54,7 +54,7 @@ CVTLMemoryTest >> testByteAtPut [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testCopyByteFromTo [
+VTLMemoryTest >> testCopyByteFromTo [
 
 	| obj |
 	obj := self newObj.
@@ -69,7 +69,7 @@ CVTLMemoryTest >> testCopyByteFromTo [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testCopyStringTo [
+VTLMemoryTest >> testCopyStringTo [
 
 	| obj |
 	obj := self newObj.
@@ -83,7 +83,7 @@ CVTLMemoryTest >> testCopyStringTo [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testCopyWordFromTo [
+VTLMemoryTest >> testCopyWordFromTo [
 
 	| obj |
 	obj := self newObj.
@@ -102,7 +102,7 @@ CVTLMemoryTest >> testCopyWordFromTo [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testCore [
+VTLMemoryTest >> testCore [
 
 	| obj arr |
 	obj := self newObj.
@@ -113,7 +113,7 @@ CVTLMemoryTest >> testCore [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testCountFromUntil [
+VTLMemoryTest >> testCountFromUntil [
 
 	| obj r |
 	obj := self newObj.
@@ -139,7 +139,7 @@ CVTLMemoryTest >> testCountFromUntil [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testStringFromUntil [
+VTLMemoryTest >> testStringFromUntil [
 
 	| obj r |
 	obj := self newObj.
@@ -152,7 +152,7 @@ CVTLMemoryTest >> testStringFromUntil [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testWordAt [
+VTLMemoryTest >> testWordAt [
 
 	| obj r |
 	obj := self newObj.
@@ -165,7 +165,7 @@ CVTLMemoryTest >> testWordAt [
 ]
 
 { #category : #tests }
-CVTLMemoryTest >> testWordAtPut [
+VTLMemoryTest >> testWordAtPut [
 
 	| obj |
 	obj := self newObj.

@@ -2,19 +2,19 @@
 A CVTLNonInteractiveUITest is a test class for testing the behavior of CVTLNonInteractiveUI
 "
 Class {
-	#name : #CVTLNonInteractiveUITest,
+	#name : #VTLNonInteractiveUITest,
 	#superclass : #TestCase,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #'instance creation' }
-CVTLNonInteractiveUITest >> newObj [
+VTLNonInteractiveUITest >> newObj [
 
-	^ CVTLNonInteractiveUI new
+	^ VTLNonInteractiveUI new
 ]
 
 { #category : #tests }
-CVTLNonInteractiveUITest >> testAddInput [
+VTLNonInteractiveUITest >> testAddInput [
 
 	| obj |
 	obj := self newObj.
@@ -28,7 +28,7 @@ CVTLNonInteractiveUITest >> testAddInput [
 ]
 
 { #category : #tests }
-CVTLNonInteractiveUITest >> testGetAsciiValue [
+VTLNonInteractiveUITest >> testGetAsciiValue [
 
 	| obj r |
 	obj := self newObj.
@@ -47,7 +47,7 @@ CVTLNonInteractiveUITest >> testGetAsciiValue [
 ]
 
 { #category : #tests }
-CVTLNonInteractiveUITest >> testInitialize [
+VTLNonInteractiveUITest >> testInitialize [
 
 	| obj |
 	obj := self newObj.
@@ -58,7 +58,7 @@ CVTLNonInteractiveUITest >> testInitialize [
 ]
 
 { #category : #tests }
-CVTLNonInteractiveUITest >> testInput [
+VTLNonInteractiveUITest >> testInput [
 
 	| obj arr |
 	obj := self newObj.
@@ -70,7 +70,7 @@ CVTLNonInteractiveUITest >> testInput [
 ]
 
 { #category : #tests }
-CVTLNonInteractiveUITest >> testOutput [
+VTLNonInteractiveUITest >> testOutput [
 
 	| obj arr |
 	obj := self newObj.
@@ -82,7 +82,7 @@ CVTLNonInteractiveUITest >> testOutput [
 ]
 
 { #category : #tests }
-CVTLNonInteractiveUITest >> testOutputString [
+VTLNonInteractiveUITest >> testOutputString [
 
 	| obj |
 	obj := self newObj.
@@ -100,7 +100,7 @@ DEF'
 ]
 
 { #category : #tests }
-CVTLNonInteractiveUITest >> testPutAsciiValue [
+VTLNonInteractiveUITest >> testPutAsciiValue [
 
 	| obj |
 	obj := self newObj.

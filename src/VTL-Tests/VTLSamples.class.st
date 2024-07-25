@@ -1,18 +1,18 @@
 Class {
-	#name : #CVTLSamples,
+	#name : #VTLSamples,
 	#superclass : #Object,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #samples }
-CVTLSamples >> sample1 [
+VTLSamples >> sample1 [
 
 	^ '100 A=123
 200 ?=A*2'
 ]
 
 { #category : #samples }
-CVTLSamples >> sample2 [
+VTLSamples >> sample2 [
 
 '00010 ) Factorial
 00100 X=?

@@ -2,19 +2,19 @@
 A CVTLStatusTest is a test class for testing the behavior of CVTLStatus
 "
 Class {
-	#name : #CVTLStatusTest,
+	#name : #VTLStatusTest,
 	#superclass : #TestCase,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #'instance creation' }
-CVTLStatusTest >> newObj [
+VTLStatusTest >> newObj [
 
-	^ CVTLStatus new
+	^ VTLStatus new
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testBePrompted [
+VTLStatusTest >> testBePrompted [
 
 	| obj |
 	obj := self newObj.
@@ -26,7 +26,7 @@ CVTLStatusTest >> testBePrompted [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testBeStepping [
+VTLStatusTest >> testBeStepping [
 
 	| obj |
 	obj := self newObj.
@@ -37,7 +37,7 @@ CVTLStatusTest >> testBeStepping [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testInitialize [
+VTLStatusTest >> testInitialize [
 
 	| obj |
 	obj := self newObj.
@@ -47,7 +47,7 @@ CVTLStatusTest >> testInitialize [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testIsPrompted [
+VTLStatusTest >> testIsPrompted [
 
 	| obj |
 	obj := self newObj.
@@ -58,7 +58,7 @@ CVTLStatusTest >> testIsPrompted [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testIsStepping [
+VTLStatusTest >> testIsStepping [
 
 	| obj |
 	obj := self newObj.
@@ -69,7 +69,7 @@ CVTLStatusTest >> testIsStepping [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testPosition [
+VTLStatusTest >> testPosition [
 
 	| obj |
 	obj := self newObj.
@@ -81,7 +81,7 @@ CVTLStatusTest >> testPosition [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testPrintOn [
+VTLStatusTest >> testPrintOn [
 
 	| obj stream |
 	obj := self newObj.
@@ -101,7 +101,7 @@ CVTLStatusTest >> testPrintOn [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testState [
+VTLStatusTest >> testState [
 
 	| obj |
 	obj := self newObj.
@@ -113,7 +113,7 @@ CVTLStatusTest >> testState [
 ]
 
 { #category : #tests }
-CVTLStatusTest >> testTopOfLine [
+VTLStatusTest >> testTopOfLine [
 
 	| obj |
 	obj := self newObj.

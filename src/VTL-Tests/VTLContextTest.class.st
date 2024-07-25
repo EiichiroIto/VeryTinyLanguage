@@ -2,19 +2,19 @@
 A CVTLContextTest is a test class for testing the behavior of CVTLContext
 "
 Class {
-	#name : #CVTLContextTest,
+	#name : #VTLContextTest,
 	#superclass : #TestCase,
-	#category : #'CVTL-Tests'
+	#category : #'VTL-Tests'
 }
 
 { #category : #'instance creation' }
-CVTLContextTest >> newObj [
+VTLContextTest >> newObj [
 
-	^ CVTLContext new
+	^ VTLContext new
 ]
 
 { #category : #tests }
-CVTLContextTest >> testDecrement [
+VTLContextTest >> testDecrement [
 
 	| obj |
 	obj := self newObj.
@@ -27,7 +27,7 @@ CVTLContextTest >> testDecrement [
 ]
 
 { #category : #tests }
-CVTLContextTest >> testIncrement [
+VTLContextTest >> testIncrement [
 
 	| obj |
 	obj := self newObj.
@@ -40,7 +40,7 @@ CVTLContextTest >> testIncrement [
 ]
 
 { #category : #tests }
-CVTLContextTest >> testPosition [
+VTLContextTest >> testPosition [
 
 	| obj |
 	obj := self newObj.
@@ -52,7 +52,7 @@ CVTLContextTest >> testPosition [
 ]
 
 { #category : #tests }
-CVTLContextTest >> testPrintOn [
+VTLContextTest >> testPrintOn [
 
 	| obj stream |
 	obj := self newObj.
