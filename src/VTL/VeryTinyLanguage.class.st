@@ -125,7 +125,7 @@ VeryTinyLanguage >> deleteLineNo: anInteger [
 VeryTinyLanguage >> doList [
 
 	| context num boundary |
-	context := self newContext: self programAddress.
+	context := self newContext: self programTop.
 	boundary := self boundary.
 	[ context position < boundary ] whileTrue: [ 
 		num := memory wordAt: context position.
@@ -258,7 +258,7 @@ VeryTinyLanguage >> findLine [
 	| pos v boundary currentLine |
 	boundary := self boundary.
 	currentLine := self currentLineNo.
-	pos := self programAddress.
+	pos := self programTop.
 	[ pos ~= boundary ] whileTrue: [ 
 		v := memory wordAt: pos.
 		v >= currentLine ifTrue: [ 
@@ -410,10 +410,22 @@ VeryTinyLanguage >> numberBufferAddress [
 	^ 16r82
 ]
 
-{ #category : #constants }
-VeryTinyLanguage >> programAddress [
+{ #category : #accessing }
+VeryTinyLanguage >> programTop [
 
-	^ 16r108
+	^ memory wordAt: self programTopAddress
+]
+
+{ #category : #accessing }
+VeryTinyLanguage >> programTop: anInteger [
+
+	memory wordAt: self programTopAddress put: anInteger
+]
+
+{ #category : #constants }
+VeryTinyLanguage >> programTopAddress [
+
+	^ 2 * (2 + $= asciiValue)
 ]
 
 { #category : #'input/output' }

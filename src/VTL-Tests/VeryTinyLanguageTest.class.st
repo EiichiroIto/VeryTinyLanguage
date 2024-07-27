@@ -8,6 +8,12 @@ Class {
 }
 
 { #category : #constants }
+VeryTinyLanguageTest >> defaultProgramTop [
+
+	^ 16r108
+]
+
+{ #category : #constants }
 VeryTinyLanguageTest >> defaultRandomSeed [
 
 	^ 12345
@@ -58,7 +64,8 @@ VeryTinyLanguageTest >> setupFor: aCVTL [
 	memory := self newMemory: self memorySize.
 	aCVTL memory: memory.
 	aCVTL memoryLimit: self memorySize.
-	aCVTL boundary: aCVTL programAddress.
+	aCVTL programTop: self defaultProgramTop.
+	aCVTL boundary: self defaultProgramTop.
 	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed
 ]
 
@@ -70,7 +77,7 @@ VeryTinyLanguageTest >> setupProgram1 [
 	memory := self newMemory: 300.
 	obj memory: memory.
 	obj memoryLimit: 300.
-	obj boundary: obj programAddress.
+	obj boundary: obj programTop.
 	ptr := obj boundary.
 	memory wordAt: ptr put: 100.
 	memory copyString: ' X=5' to: ptr + 2.
@@ -378,7 +385,7 @@ VeryTinyLanguageTest >> testDeleteLineNo [
 
 	| obj org r |
 	obj := self setupProgram1.
-	org := obj programAddress.
+	org := obj programTop.
 	r := obj deleteLineNo: 90.
 	self assert: r equals: org.
 	r := obj deleteLineNo: 105.
@@ -404,7 +411,7 @@ VeryTinyLanguageTest >> testDeleteLineNo [
 	self assert: (obj memory byteAt: org + 14) equals: $Y asciiValue.
 	self assert: (obj memory byteAt: org + 15) equals: 0.
 	obj deleteLineNo: 100.
-	org := obj programAddress.
+	org := obj programTop.
 	self assert: obj boundary equals: org + 2 + 6 + 1.
 	self assert: (obj memory wordAt: org) equals: 120.
 	self assert: (obj memory byteAt: org + 2) equals: Character space asciiValue.
@@ -415,7 +422,7 @@ VeryTinyLanguageTest >> testDeleteLineNo [
 	self assert: (obj memory byteAt: org + 7) equals: $Y asciiValue.
 	self assert: (obj memory byteAt: org + 8) equals: 0.
 	obj deleteLineNo: 120.
-	org := obj programAddress.
+	org := obj programTop.
 	self assert: obj boundary equals: org
 ]
 
@@ -540,7 +547,7 @@ VeryTinyLanguageTest >> testEntryLineNo [
 	memory := self newMemory: 300.
 	obj memory: memory.
 	obj memoryLimit: 300.
-	org := obj programAddress.
+	org := obj programTop.
 	obj boundary: org.
 	pos := obj lineBufferAddress + 2.
 	memory copyString: 'Y=23' to: pos.
@@ -623,7 +630,7 @@ VeryTinyLanguageTest >> testExpressionContext [
 	| obj pos context r |
 	obj := self newObj.
 	self setupFor: obj.
-	pos := obj programAddress.
+	pos := obj programTop.
 
 	obj memory copyString: '1+2' to: pos.
 	context := self newContext: pos.
@@ -650,7 +657,7 @@ VeryTinyLanguageTest >> testFactorContext [
 	| obj pos context r |
 	obj := self newObj.
 	self setupFor: obj.
-	pos := obj programAddress.
+	pos := obj programTop.
 	obj memory byteAt: pos put: 0.
 	context := self newContext: pos.
 	r := obj factorContext: context.
@@ -677,25 +684,25 @@ VeryTinyLanguageTest >> testFindLine [
 	obj := self setupProgram1.
 	obj currentLineNo: 1.
 	r := obj findLine.
-	self assert: r equals: obj programAddress.
+	self assert: r equals: obj programTop.
 	obj currentLineNo: 100.
 	r := obj findLine.
-	self assert: r equals: obj programAddress.
+	self assert: r equals: obj programTop.
 	self assert: (obj memory byteAt: r) > 0.
 	obj currentLineNo: 109.
 	r := obj findLine.
-	self assert: r equals: obj programAddress + 7.
+	self assert: r equals: obj programTop + 7.
 	obj currentLineNo: 110.
 	r := obj findLine.
-	self assert: r equals: obj programAddress + 7.
+	self assert: r equals: obj programTop + 7.
 	self assert: (obj memory byteAt: r - 1) equals: 0.
 	self assert: (obj memory byteAt: r) > 0.
 	obj currentLineNo: 111.
 	r := obj findLine.
-	self assert: r equals: obj programAddress + 7 + 8.
+	self assert: r equals: obj programTop + 7 + 8.
 	obj currentLineNo: 120.
 	r := obj findLine.
-	self assert: r equals: obj programAddress + 7 + 8.
+	self assert: r equals: obj programTop + 7 + 8.
 	self assert: (obj memory byteAt: r - 1) equals: 0.
 	self assert: (obj memory byteAt: r) > 0.
 	obj currentLineNo: 121.
@@ -874,7 +881,7 @@ VeryTinyLanguageTest >> testNextLineOf [
 
 	| obj org r |
 	obj := self setupProgram1.
-	org := obj programAddress.
+	org := obj programTop.
 	r := obj nextLineOf: org.
 	self assert: r equals: org + 7.
 	r := obj nextLineOf: org + 7.
@@ -890,9 +897,26 @@ VeryTinyLanguageTest >> testNumberBufferAddress [
 ]
 
 { #category : #tests }
-VeryTinyLanguageTest >> testProgramAddress [
+VeryTinyLanguageTest >> testProgramTop [
 
-	self assert: self newObj programAddress equals: 16r108
+	| obj memory |
+	obj := self newObj.
+	memory := self newMemory: 256.
+	obj memory: memory.
+	obj programTop: 16r1234.
+	self assert: obj programTop equals: 16r1234.
+	self assert: (memory byteAt: obj programTopAddress) equals: 16r34.
+	self assert: (memory byteAt: obj programTopAddress + 1) equals: 16r12
+]
+
+{ #category : #tests }
+VeryTinyLanguageTest >> testProgramTopAddress [
+
+	| obj |
+	obj := self newObj.
+	self
+		assert: obj programTopAddress
+		equals: (obj addressForAsciiValue: $= asciiValue)
 ]
 
 { #category : #tests }
@@ -975,7 +999,7 @@ VeryTinyLanguageTest >> testStatementContext [
 	| obj pos ui context |
 	obj := self newObj.
 	self setupFor: obj.
-	pos := obj programAddress.
+	pos := obj programTop.
 	obj memory copyString: '?="abc"' to: pos.
 	ui := self newUI.
 	obj ui: ui.
@@ -1011,7 +1035,7 @@ VeryTinyLanguageTest >> testTermContext [
 	| obj pos context r |
 	obj := self newObj.
 	self setupFor: obj.
-	pos := obj programAddress.
+	pos := obj programTop.
 	obj memory copyString: '+2' to: pos.
 	context := self newContext: pos.
 	r := obj term: 5 context: context.
@@ -1096,7 +1120,7 @@ VeryTinyLanguageTest >> testVariableContext [
 	obj := self newObj.
 	memory := self newMemory: 300.
 	obj memory: memory.
-	pos := obj programAddress.
+	pos := obj programTop.
 	context := self newContext: pos.
 	memory byteAt: pos put: $a asciiValue.
 	arr := obj variableContext: context.

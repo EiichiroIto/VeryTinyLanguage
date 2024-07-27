@@ -8,6 +8,12 @@ Class {
 }
 
 { #category : #constants }
+VTLSamplesTest >> defaultProgramTop [
+
+	^ 16r108
+]
+
+{ #category : #constants }
 VTLSamplesTest >> defaultRandomSeed [
 
 	^ 12345
@@ -61,7 +67,8 @@ VTLSamplesTest >> setupFor: aCVTL [
 	aCVTL memory: memory.
 	memory allocate: self memorySize.
 	aCVTL memoryLimit: self memorySize.
-	aCVTL boundary: aCVTL programAddress.
+	aCVTL programTop: self defaultProgramTop.
+	aCVTL boundary: self defaultProgramTop.
 	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed.
 	aCVTL status: VTLStatus new
 ]

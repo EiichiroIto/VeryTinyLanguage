@@ -84,6 +84,12 @@ SpVTL >> defaultLayout [
 ]
 
 { #category : #constants }
+SpVTL >> defaultProgramTop [
+
+	^ 16r108
+]
+
+{ #category : #constants }
 SpVTL >> defaultRandomSeed [
 
 	^ 12345
@@ -292,7 +298,7 @@ SpVTL >> loadFile [
 		        path: FileSystem workingDirectory.
 	file ifNil: [ ^ self ].
 	file isFile ifFalse: [ ^ self ].
-	language boundary: language programAddress.
+	language boundary: language programTop.
 	self enterString: file contents.
 	output takeKeyboardFocus
 ]
@@ -389,7 +395,8 @@ SpVTL >> setupFor: aCVTL [
 	memory := self newMemory: self memorySize.
 	aCVTL memory: memory.
 	aCVTL memoryLimit: self memorySize.
-	aCVTL boundary: aCVTL programAddress.
+	aCVTL programTop: self defaultProgramTop.
+	aCVTL boundary: self defaultProgramTop.
 	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed
 ]
 
