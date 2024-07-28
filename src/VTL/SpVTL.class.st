@@ -394,9 +394,7 @@ SpVTL >> setupFor: aCVTL [
 	| memory |
 	memory := self newMemory: self memorySize.
 	aCVTL memory: memory.
-	aCVTL memoryLimit: self memorySize.
-	aCVTL programTop: self defaultProgramTop.
-	aCVTL boundary: self defaultProgramTop.
+	aCVTL programTop: self defaultProgramTop memorySize: self memorySize.
 	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed
 ]
 

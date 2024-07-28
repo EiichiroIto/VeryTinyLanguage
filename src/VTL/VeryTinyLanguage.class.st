@@ -422,6 +422,14 @@ VeryTinyLanguage >> programTop: anInteger [
 	memory wordAt: self programTopAddress put: anInteger
 ]
 
+{ #category : #action }
+VeryTinyLanguage >> programTop: anInteger memorySize: anInteger2 [
+
+	self memoryLimit: anInteger2.
+	self programTop: anInteger.
+	self boundary: anInteger
+]
+
 { #category : #constants }
 VeryTinyLanguage >> programTopAddress [
 
@@ -565,23 +573,19 @@ VeryTinyLanguage >> updateRandom: anInteger [
 ]
 
 { #category : #accessing }
-VeryTinyLanguage >> variableAt: anObject [
+VeryTinyLanguage >> variableAt: aCharacter [
 
-	| asciiValue |
-	asciiValue := anObject isCharacter
-		              ifTrue: [ anObject asciiValue ]
-		              ifFalse: [ anObject asInteger ].
-	^ memory wordAt: (self addressForAsciiValue: asciiValue)
+	| address |
+	address := self addressForAsciiValue: aCharacter asciiValue.
+	^ memory wordAt: address
 ]
 
 { #category : #accessing }
-VeryTinyLanguage >> variableAt: anObject put: anInteger [
+VeryTinyLanguage >> variableAt: aCharacter put: anInteger [
 
-	| asciiValue |
-	asciiValue := anObject isCharacter
-		              ifTrue: [ anObject asciiValue ]
-		              ifFalse: [ anObject asInteger ].
-	memory wordAt: (self addressForAsciiValue: asciiValue) put: anInteger
+	| address |
+	address := self addressForAsciiValue: aCharacter asciiValue.
+	memory wordAt: address put: anInteger
 ]
 
 { #category : #private }

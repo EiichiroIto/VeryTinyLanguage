@@ -63,9 +63,7 @@ VeryTinyLanguageTest >> setupFor: aCVTL [
 	| memory |
 	memory := self newMemory: self memorySize.
 	aCVTL memory: memory.
-	aCVTL memoryLimit: self memorySize.
-	aCVTL programTop: self defaultProgramTop.
-	aCVTL boundary: self defaultProgramTop.
+	aCVTL programTop: self defaultProgramTop memorySize: self memorySize.
 	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed
 ]
 
@@ -1111,6 +1109,32 @@ VeryTinyLanguageTest >> testUpdateRandom [
 	self assert: (obj memory wordAt: obj randomAddress) equals: 12345.
 	obj updateRandom: 123.
 	self assert: (obj memory wordAt: obj randomAddress) equals: 16rB430
+]
+
+{ #category : #tests }
+VeryTinyLanguageTest >> testVariableAt [
+
+	| obj r |
+	obj := self newObj.
+	self setupFor: obj.
+	r := obj variableAt: $=.
+	self assert: r equals: self defaultProgramTop.
+	r := obj variableAt: $&.
+	self assert: r equals: self defaultProgramTop.
+	r := obj variableAt: $*.
+	self assert: r equals: self memorySize
+]
+
+{ #category : #tests }
+VeryTinyLanguageTest >> testVariableAtPut [
+
+	| obj |
+	obj := self newObj.
+	self setupFor: obj.
+	obj variableAt: $* put: 16r1234.
+	self assert: obj memoryLimit equals: 16r1234.
+	obj variableAt: $& put: 500.
+	self assert: obj boundary equals: 500
 ]
 
 { #category : #tests }

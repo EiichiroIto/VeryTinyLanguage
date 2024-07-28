@@ -42,6 +42,14 @@ VTLSamplesTest >> memorySize [
 ]
 
 { #category : #'instance creation' }
+VTLSamplesTest >> newMemory: anInteger [
+
+	^ VTLMemory new
+		  allocate: anInteger;
+		  yourself
+]
+
+{ #category : #'instance creation' }
 VTLSamplesTest >> newObj [
 
 	^ VeryTinyLanguage new
@@ -63,14 +71,10 @@ VTLSamplesTest >> newUI [
 VTLSamplesTest >> setupFor: aCVTL [
 
 	| memory |
-	memory := VTLMemory new.
+	memory := self newMemory: self memorySize.
 	aCVTL memory: memory.
-	memory allocate: self memorySize.
-	aCVTL memoryLimit: self memorySize.
-	aCVTL programTop: self defaultProgramTop.
-	aCVTL boundary: self defaultProgramTop.
-	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed.
-	aCVTL status: VTLStatus new
+	aCVTL programTop: self defaultProgramTop memorySize: self memorySize.
+	memory wordAt: aCVTL randomAddress put: self defaultRandomSeed
 ]
 
 { #category : #tests }
