@@ -158,13 +158,17 @@ VeryTinyLanguage >> doOneCycle [
 			beStepping;
 			topOfLine: pos ].
 	status isStepping ifTrue: [ 
-		self executeOnce ifTrue: [ 
-			self
-				putCrlf;
-				putAsciiValue: $O asciiValue;
-				putAsciiValue: $K asciiValue;
-				putCrlf.
-			status bePrompted ].
+		self executeOnce
+			ifTrue: [ 
+				self
+					putCrlf;
+					putAsciiValue: $O asciiValue;
+					putAsciiValue: $K asciiValue;
+					putCrlf.
+				status bePrompted ]
+			ifFalse: [ 
+				lineNo := memory wordAt: status topOfLine.
+				self currentLineNo: lineNo ].
 		^ self ].
 	self error
 ]
@@ -212,9 +216,7 @@ VeryTinyLanguage >> executeOnce [
 			memory wordAt: self savedLineNoAddress put: lineNo + 1.
 			status topOfLine: self findLine.
 			status topOfLine ifNil: [ ^ true ] ].
-	lineNo := memory wordAt: status topOfLine.
-	self currentLineNo: lineNo.
-	status position: status topOfLine + 2 + 1.
+	status position: 0.
 	^ false
 ]
 
@@ -250,6 +252,12 @@ VeryTinyLanguage >> factorContext: aContext [
 	aContext decrement.
 	tmp := self variableContext: aContext.
 	^ memory wordAt: tmp second
+]
+
+{ #category : #accessing }
+VeryTinyLanguage >> fileExtension [
+
+	^ 'vtl'
 ]
 
 { #category : #private }
@@ -499,6 +507,8 @@ VeryTinyLanguage >> savedLineNoAddress [
 VeryTinyLanguage >> statementContext: aContext [
 
 	| tmp c address c2 value |
+	aContext position = 0 ifTrue: [ 
+		aContext position: status topOfLine + 3 ].
 	tmp := self variableContext: aContext.
 	c := tmp first.
 	address := tmp second.

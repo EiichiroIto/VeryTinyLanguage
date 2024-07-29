@@ -597,7 +597,7 @@ VeryTinyLanguageTest >> testEntryLineNo [
 { #category : #tests }
 VeryTinyLanguageTest >> testExecuteOnce [
 
-	| obj pos status r |
+	| obj pos status r lineNo |
 	obj := self setupProgram1.
 	pos := obj lineBufferAddress + 2.
 	obj memory copyString: '#=1' to: pos.
@@ -606,14 +606,25 @@ VeryTinyLanguageTest >> testExecuteOnce [
 	status topOfLine: obj lineBufferAddress.
 	status beStepping.
 	obj status: status.
+
 	r := obj executeOnce.
 	self deny: r.
+
+	lineNo := obj memory wordAt: status topOfLine.
+	obj currentLineNo: lineNo.
 	r := obj executeOnce.
 	self deny: r.
+
+	lineNo := obj memory wordAt: status topOfLine.
+	obj currentLineNo: lineNo.
 	r := obj executeOnce.
 	self deny: r.
+
+	lineNo := obj memory wordAt: status topOfLine.
+	obj currentLineNo: lineNo.
 	r := obj executeOnce.
 	self assert: r.
+
 	r := obj memory wordAt: (obj addressForAsciiValue: $x asciiValue).
 	self assert: r equals: 5.
 	r := obj memory wordAt: (obj addressForAsciiValue: $y asciiValue).
@@ -998,22 +1009,24 @@ VeryTinyLanguageTest >> testStatementContext [
 	obj := self newObj.
 	self setupFor: obj.
 	pos := obj programTop.
-	obj memory copyString: '?="abc"' to: pos.
+	obj memory wordAt: pos put: 0.
+	obj memory copyString: '?="abc"' to: pos + 2.
+	obj status topOfLine: pos.
 	ui := self newUI.
 	obj ui: ui.
-	context := self newContext: pos.
+	context := self newContext: pos + 2.
 	obj statementContext: context.
 	self assert: obj ui outputString equals: 'abc
 '.
-	self assert: context position equals: pos + 7.
+	self assert: context position equals: pos + 9.
 
-	obj memory copyString: '?="abc";' to: pos.
+	obj memory copyString: '?="abc";' to: pos + 2.
 	ui := self newUI.
 	obj ui: ui.
-	context position: pos.
+	context position: pos + 2.
 	obj statementContext: context.
 	self assert: obj ui outputString equals: 'abc'.
-	self assert: context position equals: pos + 8
+	self assert: context position equals: pos + 10
 ]
 
 { #category : #tests }

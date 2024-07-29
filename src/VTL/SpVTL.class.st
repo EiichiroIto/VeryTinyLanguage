@@ -16,7 +16,7 @@ Class {
 SpVTL class >> menuCommandOn: aBuilder [
 
 	<worldMenu>
-	(aBuilder item: 'CVTL')
+	(aBuilder item: 'VTL')
 		parent: #Tools;
 		order: 900;
 		target: self;
@@ -116,7 +116,7 @@ SpVTL >> executionLoop [
 { #category : #constants }
 SpVTL >> extension [
 
-	^ 'vtl'
+	^ language fileExtension
 ]
 
 { #category : #initialization }
