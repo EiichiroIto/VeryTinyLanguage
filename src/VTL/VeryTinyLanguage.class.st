@@ -142,6 +142,7 @@ VeryTinyLanguage >> doOneCycle [
 
 	| pos context lineNo |
 	status isPrompted ifTrue: [ 
+		self setup.
 		pos := self lineBufferAddress + 2.
 		self getLineInto: pos.
 		context := self newContext: pos.
@@ -462,7 +463,7 @@ VeryTinyLanguage >> putCrlf [
 VeryTinyLanguage >> putNumber: anInteger [
 
 	| pos x y |
-	x := anInteger.
+	x := anInteger bitAnd: 16rFFFF.
 	pos := self numberBufferAddress + 5.
 	memory byteAt: pos put: 0.
 	[ 
@@ -501,6 +502,12 @@ VeryTinyLanguage >> remainderAddress [
 VeryTinyLanguage >> savedLineNoAddress [
 
 	^ 2 * (2 + $! asciiValue)
+]
+
+{ #category : #private }
+VeryTinyLanguage >> setup [
+
+	"self subclassResponsibility"
 ]
 
 { #category : #private }

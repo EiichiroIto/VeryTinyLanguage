@@ -8,9 +8,37 @@ Class {
 }
 
 { #category : #'instance creation' }
+VTLContextTest >> newMemory: anInteger [
+
+	^ VTLMemory new
+		  allocate: anInteger;
+		  yourself
+]
+
+{ #category : #'instance creation' }
 VTLContextTest >> newObj [
 
 	^ VTLContext new
+]
+
+{ #category : #tests }
+VTLContextTest >> testByteIn [
+
+	| obj memory r |
+	obj := self newObj.
+	memory := self newMemory: 4.
+	memory byteAt: 0 put: 10.
+	memory byteAt: 1 put: 11.
+	memory byteAt: 2 put: 12.
+	memory byteAt: 3 put: 13.
+
+	obj position: 0.
+	r := obj byteIn: memory.
+	self assert: r equals: 10.
+
+	obj position: 3.
+	r := obj byteIn: memory.
+	self assert: r equals: 13
 ]
 
 { #category : #tests }

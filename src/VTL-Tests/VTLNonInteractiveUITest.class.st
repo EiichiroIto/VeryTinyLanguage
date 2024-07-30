@@ -28,6 +28,19 @@ VTLNonInteractiveUITest >> testAddInput [
 ]
 
 { #category : #tests }
+VTLNonInteractiveUITest >> testClear [
+
+	| obj |
+	obj := self newObj.
+	obj putAsciiValue: $a asciiValue.
+	obj putAsciiValue: $b asciiValue.
+	obj putAsciiValue: $c asciiValue.
+	self deny: obj output isEmpty.
+	obj clear.
+	self assert: obj output isEmpty
+]
+
+{ #category : #tests }
 VTLNonInteractiveUITest >> testGetAsciiValue [
 
 	| obj r |
@@ -113,4 +126,15 @@ VTLNonInteractiveUITest >> testPutAsciiValue [
 	self assert: obj output first equals: $A asciiValue.
 	self assert: obj output second equals: $B asciiValue.
 	self assert: obj output third equals: $C asciiValue
+]
+
+{ #category : #tests }
+VTLNonInteractiveUITest >> testRefresh [
+
+	| obj |
+	obj := self newObj.
+	obj addInput: 'abc'.
+	self deny: obj input isEmpty.
+	obj refresh.
+	self assert: obj input isEmpty
 ]

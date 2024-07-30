@@ -687,6 +687,12 @@ VeryTinyLanguageTest >> testFactorContext [
 ]
 
 { #category : #tests }
+VeryTinyLanguageTest >> testFileExtension [
+
+	self assert: self newObj fileExtension isString
+]
+
+{ #category : #tests }
 VeryTinyLanguageTest >> testFindLine [
 
 	| obj r |
@@ -782,6 +788,16 @@ VeryTinyLanguageTest >> testIndexForAsciiValue [
 			(each between: 1 and: 26)
 				ifTrue: [ self assert: tmp size equals: 2 ]
 				ifFalse: [ self assert: tmp size equals: 1 ] ] ]
+]
+
+{ #category : #tests }
+VeryTinyLanguageTest >> testInitialize [
+
+	| obj |
+	obj := VeryTinyLanguage basicNew.
+	self assert: obj status isNil.
+	obj initialize.
+	self assert: obj status notNil
 ]
 
 { #category : #tests }
@@ -926,6 +942,21 @@ VeryTinyLanguageTest >> testProgramTopAddress [
 	self
 		assert: obj programTopAddress
 		equals: (obj addressForAsciiValue: $= asciiValue)
+]
+
+{ #category : #tests }
+VeryTinyLanguageTest >> testProgramTopMemorySize [
+
+	| obj |
+	obj := self newObj.
+	obj memory: (self newMemory: 1000).
+	self assert: obj boundary equals: 0.
+	self assert: obj programTop equals: 0.
+	self assert: obj memoryLimit equals: 0.
+	obj programTop: 123 memorySize: 456.
+	self assert: obj boundary equals: 123.
+	self assert: obj programTop equals: 123.
+	self assert: obj memoryLimit equals: 456
 ]
 
 { #category : #tests }

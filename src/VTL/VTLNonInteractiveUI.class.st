@@ -15,6 +15,12 @@ VTLNonInteractiveUI >> addInput: aString [
 ]
 
 { #category : #accessing }
+VTLNonInteractiveUI >> clear [
+
+	output := OrderedCollection new
+]
+
+{ #category : #accessing }
 VTLNonInteractiveUI >> getAsciiValue [
 
 	| line |
@@ -29,8 +35,8 @@ VTLNonInteractiveUI >> getAsciiValue [
 { #category : #initialization }
 VTLNonInteractiveUI >> initialize [
 
-	output := OrderedCollection new.
-	input := OrderedCollection new
+	self clear.
+	self refresh
 ]
 
 { #category : #accessing }
@@ -68,4 +74,10 @@ VTLNonInteractiveUI >> outputString [
 VTLNonInteractiveUI >> putAsciiValue: anInteger [
 
 	output add: anInteger
+]
+
+{ #category : #accessing }
+VTLNonInteractiveUI >> refresh [
+
+	input := OrderedCollection new
 ]
