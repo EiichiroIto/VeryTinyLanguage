@@ -109,8 +109,12 @@ SpVTL >> enterString: aString [
 SpVTL >> executionLoop [
 
 	[ 
-	language doOneCycle.
-	(Delay forMilliseconds: 100) wait ] repeat
+	[ language doOneCycle ]
+		on: Error
+		do: [ :err | 
+			language status bePrompted.
+			output morph put: 'ERROR:' , err asString , String cr ].
+	(Delay forMilliseconds: 1) wait ] repeat
 ]
 
 { #category : #constants }

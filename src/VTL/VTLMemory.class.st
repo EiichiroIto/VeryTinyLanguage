@@ -22,7 +22,7 @@ VTLMemory >> byteAt: anInteger [
 { #category : #accessing }
 VTLMemory >> byteAt: anInteger put: anInteger2 [
 
-	core at: anInteger + 1 put: anInteger2
+	core at: anInteger + 1 put: (anInteger2 bitAnd: 16rFF)
 ]
 
 { #category : #action }
@@ -98,6 +98,6 @@ VTLMemory >> wordAt: anInteger [
 { #category : #accessing }
 VTLMemory >> wordAt: anInteger put: anInteger2 [
 
-	core at: anInteger + 1 put: anInteger2 \\ 256.
-	core at: anInteger + 2 put: anInteger2 // 256
+	core at: anInteger + 1 put: (anInteger2 bitAnd: 16rFF).
+	core at: anInteger + 2 put: (anInteger2 >> 8 bitAnd: 16rFF)
 ]
