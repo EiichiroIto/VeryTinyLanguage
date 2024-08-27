@@ -7,34 +7,34 @@ Class {
 		'status'
 	],
 	#classVars : [
-		'VariableTable'
+		'AddressTable'
 	],
 	#category : #'VTL-Core'
 }
 
-{ #category : #'class initialization' }
-VeryTinyLanguage class >> initialize [
-	"CVTL initialize"
-
-	VariableTable := self variableTable
-]
-
 { #category : #private }
-VeryTinyLanguage class >> variableTable [
+VeryTinyLanguage class >> buildAddressTable [
 
 	| obj arr |
 	obj := self new.
 	arr := Array new: 256.
 	0 to: 255 do: [ :each | 
-	arr at: each + 1 put: (obj indexForAsciiValue: each) ].
+		arr at: each + 1 put: 2 * ((obj indexForAsciiValue: each) + 2) ].
 	^ arr
+]
+
+{ #category : #'class initialization' }
+VeryTinyLanguage class >> initialize [
+	"self initialize"
+
+	AddressTable := self buildAddressTable
 ]
 
 { #category : #accessing }
 VeryTinyLanguage >> addressForAsciiValue: anInteger [
 
-	VariableTable ifNil: [ self class initialize ].
-	^ 2 * ((VariableTable at: anInteger + 1) + 2)
+	AddressTable ifNil: [ self class initialize ].
+	^ AddressTable at: anInteger + 1
 ]
 
 { #category : #accessing }
