@@ -83,25 +83,6 @@ VTLMemoryTest >> testCopyStringTo [
 ]
 
 { #category : #tests }
-VTLMemoryTest >> testCopyWordFromTo [
-
-	| obj |
-	obj := self newObj.
-	obj allocate: 12.
-	obj wordAt: 2 put: 16r9010.
-	obj wordAt: 4 put: 16r8020.
-	obj wordAt: 6 put: 16r7030.
-	self
-		assertCollection: obj core
-		equals: #[ 0 0 16r10 16r90 16r20 16r80 16r30 16r70 0 0 0 0 ].
-	obj copyWordFrom: 2 to: 6.
-	obj copyWordFrom: 4 to: 0.
-	self
-		assertCollection: obj core
-		equals: #[ 16r20 16r80 16r10 16r90 16r20 16r80 16r10 16r90 0 0 0 0 ]
-]
-
-{ #category : #tests }
 VTLMemoryTest >> testCore [
 
 	| obj arr |

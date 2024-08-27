@@ -87,7 +87,7 @@ VeryTinyLanguage >> currentLineNoAddress [
 	^ 2 * (2 + $# asciiValue)
 ]
 
-{ #category : #private }
+{ #category : #parsing }
 VeryTinyLanguage >> decimalContext: aContext [
 
 	| c ch num |
@@ -221,7 +221,7 @@ VeryTinyLanguage >> executeOnce [
 	^ false
 ]
 
-{ #category : #private }
+{ #category : #parsing }
 VeryTinyLanguage >> expressionContext: aContext [
 
 	| value c |
@@ -234,7 +234,7 @@ VeryTinyLanguage >> expressionContext: aContext [
 	^ value
 ]
 
-{ #category : #private }
+{ #category : #parsing }
 VeryTinyLanguage >> factorContext: aContext [
 
 	| c tmp |
@@ -510,7 +510,7 @@ VeryTinyLanguage >> setup [
 	"self subclassResponsibility"
 ]
 
-{ #category : #private }
+{ #category : #parsing }
 VeryTinyLanguage >> statementContext: aContext [
 
 	| tmp c address c2 value |
@@ -549,7 +549,7 @@ VeryTinyLanguage >> status: anObject [
 	status := anObject
 ]
 
-{ #category : #private }
+{ #category : #parsing }
 VeryTinyLanguage >> term: anInteger context: aContext [
 
 	| c value |
@@ -605,7 +605,7 @@ VeryTinyLanguage >> variableAt: aCharacter put: anInteger [
 	memory wordAt: address put: anInteger
 ]
 
-{ #category : #private }
+{ #category : #parsing }
 VeryTinyLanguage >> variableContext: aContext [
 
 	| c value address |

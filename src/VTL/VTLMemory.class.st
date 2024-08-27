@@ -42,15 +42,6 @@ VTLMemory >> copyString: aString to: anInteger [
 	self byteAt: anInteger + aString size put: 0
 ]
 
-{ #category : #action }
-VTLMemory >> copyWordFrom: anInteger to: anInteger2 [
-
-	| tmp |
-	tmp := self wordAt: anInteger.
-	self wordAt: anInteger2 put: tmp.
-	^ tmp
-]
-
 { #category : #accessing }
 VTLMemory >> core [
 
