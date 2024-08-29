@@ -425,7 +425,8 @@ SpVTL >> startProcess [
 
 	self stopProcess.
 	language ui: self.
-	process := [ 
+	process := [
+	           language greeting.
 	           self executionLoop.
 	           process := nil ] fork
 ]

@@ -196,7 +196,7 @@ VeryTinyLanguage >> entry: anInteger lineNo: anInteger2 [
 	cur ifNil: [ cur := self boundary ].
 	(memory byteAt: anInteger) = 0 ifTrue: [ ^ self ].
 	count := 3 + (memory countFrom: anInteger until: 0).
-	(self insert: count at: cur) ifFalse: [ ^ self ].
+	(self insert: count at: cur) ifFalse: [ self error: 'OUT OF MEMORY' ].
 	self entry: anInteger into: cur lineNo: anInteger2
 ]
 
@@ -304,6 +304,13 @@ VeryTinyLanguage >> getLineInto: anInteger [
 		memory byteAt: anInteger + pos put: c.
 		self putAsciiValue: c.
 		pos := pos + 1 ] ] repeat
+]
+
+{ #category : #action }
+VeryTinyLanguage >> greeting [
+
+	self class name do: [ :each | self putAsciiValue: each asciiValue ].
+	self putCrlf
 ]
 
 { #category : #private }
