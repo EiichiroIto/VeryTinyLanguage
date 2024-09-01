@@ -90,6 +90,25 @@ VeryTinyLanguageTest >> setupProgram1 [
 	^ obj
 ]
 
+{ #category : #private }
+VeryTinyLanguageTest >> setupProgram2 [
+
+	| obj ui ptr |
+	obj := self newObj.
+	ui := self newUI.
+	obj ui: ui.
+	self setupFor: obj.
+	ptr := obj boundary.
+	obj memory wordAt: ptr put: 10.
+	obj memory copyString: ' ?="BAKA"' to: ptr + 2.
+	ptr := ptr + 2 + 10.
+	obj memory wordAt: ptr put: 20.
+	obj memory copyString: ' #=20' to: ptr + 2.
+	ptr := ptr + 2 + 6.
+	obj boundary: ptr.
+	^ obj
+]
+
 { #category : #tests }
 VeryTinyLanguageTest >> testAddressForAsciiValue [
 
@@ -520,6 +539,30 @@ VeryTinyLanguageTest >> testDoOneCycle2 [
 ]
 
 { #category : #tests }
+VeryTinyLanguageTest >> testDoOneCycle3 [
+
+	| obj |
+	obj := self setupProgram2.
+	obj ui addInput: '#=1'.
+	obj doOneCycle.
+	self assert: obj status isStepping.
+	self assert: (obj variableAt: $#) equals: 10.
+	self assert: obj ui outputString equals: '#=1
+'.
+	obj ui clear.
+	obj doOneCycle.
+	self assert: obj status isStepping.
+	self assert: (obj variableAt: $#) equals: 20.
+	obj doOneCycle.
+	self assert: obj status isPrompted.
+	self assert: (obj variableAt: $#) equals: 20.
+	self assert: obj ui outputString equals: 'BAKA
+
+OK
+'
+]
+
+{ #category : #tests }
 VeryTinyLanguageTest >> testEntryIntoLineNo [
 
 	| obj memory |
@@ -592,45 +635,6 @@ VeryTinyLanguageTest >> testEntryLineNo [
 	self assert: (memory byteAt: org + 19) equals: $Y asciiValue.
 	self assert: (memory byteAt: org + 20) equals: 0.
 	self assert: obj boundary equals: org + 21
-]
-
-{ #category : #tests }
-VeryTinyLanguageTest >> testExecuteOnce [
-
-	| obj pos status r lineNo |
-	obj := self setupProgram1.
-	pos := obj lineBufferAddress + 2.
-	obj memory copyString: '#=1' to: pos.
-	status := self newStatus.
-	status position: pos.
-	status topOfLine: obj lineBufferAddress.
-	status beStepping.
-	obj status: status.
-
-	r := obj executeOnce.
-	self deny: r.
-
-	lineNo := obj memory wordAt: status topOfLine.
-	obj currentLineNo: lineNo.
-	r := obj executeOnce.
-	self deny: r.
-
-	lineNo := obj memory wordAt: status topOfLine.
-	obj currentLineNo: lineNo.
-	r := obj executeOnce.
-	self deny: r.
-
-	lineNo := obj memory wordAt: status topOfLine.
-	obj currentLineNo: lineNo.
-	r := obj executeOnce.
-	self assert: r.
-
-	r := obj memory wordAt: (obj addressForAsciiValue: $x asciiValue).
-	self assert: r equals: 5.
-	r := obj memory wordAt: (obj addressForAsciiValue: $y asciiValue).
-	self assert: r equals: 12.
-	r := obj memory wordAt: (obj addressForAsciiValue: $z asciiValue).
-	self assert: r equals: 17
 ]
 
 { #category : #tests }
